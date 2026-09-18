@@ -3,7 +3,10 @@ import { NavLink } from "react-router-dom";
 export default function NavRail({ items }: { items: { to: string; label: string }[] }) {
   return (
     <nav className="w-56 shrink-0 border-r border-black/5 bg-white h-screen sticky top-0 py-8 px-4">
-      <p className="font-display text-lg font-semibold text-ink-900 px-2 mb-8">WorkOnSite</p>
+      <div className="flex items-center gap-2 px-2 mb-8">
+        <img src="/logo.svg" alt="" width={28} height={28} className="rounded-lg" aria-hidden />
+        <p className="font-display text-lg font-semibold text-ink-900">WorkOnSite</p>
+      </div>
       <div className="flex flex-col gap-1">
         {items.map((item) => (
           <NavLink

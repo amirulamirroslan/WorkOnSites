@@ -13,7 +13,11 @@ export default defineConfig({
         theme_color: "#2E6BFF",
         background_color: "#0A1220",
         display: "standalone",
-        icons: [], // add 192/512 app icons from the supplied favicon/app-icon set
+        icons: [
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        ],
       },
     }),
   ],

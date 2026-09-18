@@ -1,5 +1,25 @@
 # Build progress
 
+## Built and working (this session)
+- Real logo/favicon/PWA icons (blue rounded-square mark, pin + checkmark) — was completely missing before;
+  wired into `index.html`, `vite.config.ts` PWA manifest, Login and NavRail
+- `.gitignore` — was missing entirely
+- Owner self-registration (`/register`): creates `organizations` + owner `profiles` row client-side
+- Migration `202609180006_registration_and_admin.sql`: RLS policies enabling the org-creation +
+  first-owner bootstrap insert (previously impossible — `profiles_insert_owner` required an existing
+  owner, a chicken-and-egg deadlock for the very first user), plus a `profiles.username` column
+- `create-team-member` Edge Function (`supabase/functions/`): owner-only, service-role-backed creation
+  of team_leader/worker accounts with a synthesized `username@workonsite.internal` email + random temp
+  password (shown once) — since field workers often have no real email
+- `AuthContext.signIn` now accepts a bare username (auto-maps to the synthetic email) alongside real email
+- `WorkersPage` rebuilt off real Supabase data (was mock-only) with an owner-only "+ Add team member" modal
+
+## Not yet done
+- Edge Function needs deploying by the project owner (`supabase functions deploy create-team-member`) —
+  not something doable from this side without their Supabase CLI login
+- Team-leader-scoped worker visibility (currently every org member sees the full workers list, not
+  scoped to a team leader's assigned sites)
+
 ## Built and working
 - Full worker mobile flow: Home (clock-in aware) → Clock In (Location → Face Capture → Success) →
   Task List → Task Checklist + photo evidence → Clock Out (confirm → success) → Report Issue → Profile

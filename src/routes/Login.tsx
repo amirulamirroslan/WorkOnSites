@@ -26,14 +26,14 @@ export default function Login() {
 
   return (
     <div className="surface-dark min-h-screen flex flex-col justify-center items-center gap-6 px-6">
-      <div className="w-16 h-16 rounded-2xl bg-brand" aria-hidden />
+      <img src="/logo.svg" alt="" width={64} height={64} className="rounded-2xl" aria-hidden />
       <h1 className="display text-xl font-semibold">WorkOnSite</h1>
       <p className="text-white/60 text-sm -mt-4">Field Operations Made Simple</p>
 
       <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-3">
         <input
           type="text"
-          placeholder="Email or Employee ID"
+          placeholder="Email or username"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="rounded-card bg-navy-800 px-4 py-3 text-sm placeholder-white/30"
@@ -52,6 +52,11 @@ export default function Login() {
           {submitting ? "Signing in…" : "Login"}
         </button>
       </form>
+
+      <p className="text-white/50 text-xs">
+        Setting up a new organization?{" "}
+        <a href="/register" className="text-brand font-medium">Create an account</a>
+      </p>
     </div>
   );
 }

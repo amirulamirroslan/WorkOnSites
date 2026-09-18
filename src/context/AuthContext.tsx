@@ -51,7 +51,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then(({ data }) => setProfile(data as Profile | null));
   }, [session]);
 
-  async function signIn(email: string, password: string) {
+  async function signIn(emailOrUsername: string, password: string) {
+    // Team leaders/workers created via the "Add team member" flow have no
+    // real email — they sign in with just their username, which maps to a
+    // synthetic "<username>@workonsite.internal" auth email under the hood.
+    const email = emailOrUsername.includes("@")
+      ? emailOrUsername
+      : `${emailOrUsername.trim().toLowerCase()}@workonsite.internal`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   }

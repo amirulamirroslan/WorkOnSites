@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { AppStateProvider } from "./context/AppState";
 import BottomNav from "./components/BottomNav";
 import Login from "./routes/Login";
+import Register from "./routes/Register";
 import RoleRedirect from "./routes/RoleRedirect";
 import WorkerHome from "./routes/worker/WorkerHome";
 import ClockInLocation from "./routes/worker/ClockInLocation";
@@ -47,6 +48,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<RoleRedirect />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             <Route element={<WorkerLayout />}>
               <Route path="/worker" element={<WorkerHome />} />
