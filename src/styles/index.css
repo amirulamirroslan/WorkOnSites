@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Inter", sans-serif;
+    font-feature-settings: "tnum" 1, "lnum" 1; /* tabular numerals for stat displays */
+  }
+  h1, h2, h3, .display {
+    font-family: "Inter Tight", sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  /* Worker mobile dark surface */
+  .surface-dark {
+    @apply bg-navy-950 text-white;
+  }
+
+  /* Desktop light surface (Team Leader / Owner) */
+  .surface-light {
+    @apply bg-cloud-50 text-ink-900;
+  }
+
+  /* Full-bleed action band, not a card — e.g. "Clock In", "Continue Task" */
+  .action-band {
+    @apply w-full rounded-card bg-brand text-white px-6 py-4 font-display text-lg font-semibold active:scale-[0.98] transition-transform;
+  }
+
+  /* Compact list row for lead/owner surfaces — avoids card-per-item overuse */
+  .list-row {
+    @apply flex items-center justify-between py-3 border-b border-black/5;
+  }
+}

@@ -1,51 +1,25 @@
-# WorkOnSite
+# WorkOnSite — Phase 1 scaffold
 
-Field crew clock-in verification, checklists, and reporting for a cleaning/janitorial team. Next.js 14 + Supabase + Vercel.
+Starting point for the SiteCare/WorkOnSite build. See `PHASE1_PLAN.md` for the
+full plan (design tokens, route map, schema, deliverables).
 
-## What's included
+## Use this with Claude Code
 
-- Landing page, owner/org registration, login (email for owner/team leader, username for janitors)
-- **Owner dashboard**: live overview with an announcement composer, team management (create janitor/team leader accounts), site management with a client verification link toggle, shift scheduling (date-range roster + weekdays-only option) with live no-show alerts, a requests inbox (leave/incident/supply — approve/deny/resolve/fulfill), and reports (attendance/geofence CSV export + a payroll estimate tab)
-- **Janitor app** (always-dark theme, installable PWA): clock in/out with GPS + live camera photo — queued in IndexedDB and auto-synced if the device is offline — daily checklist generated from a per-site template, and a More hub for leave/incident/supply requests, announcements, and a language switcher (English / Bahasa Malaysia / Bahasa Indonesia)
-- **Client verification page** (`/verify/[token]`): a no-login link a building client can open to see today's cleaning progress and optionally sign off — gated by a per-site token through `SECURITY DEFINER` functions, not raw table access, so the anon key can't be used to browse other sites
-- **Push notifications** and **WhatsApp** sending: both fully coded (`/api/push/send` via VAPID web push, `/api/whatsapp/send` via Meta's Cloud API) but inert until you supply real credentials — see below
-- Full Postgres schema + RLS across five migrations (`supabase/migrations/`), written with `SECURITY DEFINER` helper functions from the start
-- **Role scoping**: owner has full organization access; team_leader is scoped to their assigned sites only (their sites, their crew's shifts/requests/schedules, their own checklist templates) — enforced at the RLS level, not just hidden in the UI
-- Auth middleware that actually checks and redirects (not just refreshes)
+1. Push this folder to a new empty GitHub repo.
+2. Open it in Claude Code and paste `PHASE1_PLAN.md` plus the original master
+   spec as context.
+3. Ask Claude Code to: create a Supabase project, run
+   `supabase/migrations/202609180001_create_foundation.sql`, wire
+   `src/lib/supabase.ts` up with real env vars, and build out real auth on
+   `src/routes/Login.tsx` + role-aware routing in `src/App.tsx`.
+4. From there, work phase by phase (Sites/Geofence → Attendance → Tasks →
+   Checklists → Evidence → Team Leader → Owner → Offline → PWA → Android) as
+   the spec lays out — don't let it jump ahead and generate everything at once.
 
-Not yet built: automated tests, a staging environment, error monitoring — all deliberately out of scope per the original spec. Everything else, including full EN/MS/ID translation coverage across the entire janitor app (Home, Checklist, More, its forms, Announcements, and the camera capture flow), is done.
-
-## 1. Set up Supabase
-
-1. Create a project at supabase.com.
-2. If this project has never had any version of WorkOnSite's schema in it, skip to step 3. Otherwise (a previous attempt failed partway through, or this project ran an earlier/different version of the schema), run `supabase/reset_full.sql` first — it drops every WorkOnSite table, function, type, and storage policy with `CASCADE`, so it's safe to run even if things are in a half-finished or inconsistent state. **This deletes all data in those tables**, so only run it if you mean to start fresh.
-3. In the SQL Editor, run the five files in `supabase/migrations/` **in order**: `0001_core_schema.sql`, `0002_operations.sql`, `0003_verification_and_prefs.sql`, `0004_scope_template_policies.sql`, `0005_team_leader_scoping.sql`.
-4. In **Authentication → Providers → Email**, turn **off** "Confirm email" (this MVP's registration flow signs the owner in immediately after sign-up).
-5. Grab your keys from **Settings → API**: Project URL, `anon` public key, and `service_role` key.
-
-## 2. Configure environment variables
-
-Copy `.env.local.example` to `.env.local` and fill in the three required Supabase values. The push notification and WhatsApp values are optional — leave them blank and those features just return a clear "not configured yet" response instead of failing.
-
-To turn on push notifications: run `npx web-push generate-vapid-keys` and fill in the three `VAPID_*` values.
-To turn on WhatsApp: create a Meta developer app with WhatsApp Business, and fill in `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_ACCESS_TOKEN`.
-
-## 3. Run locally
+## Local setup
 
 ```bash
 npm install
+cp .env.example .env   # fill in Supabase URL + anon key
 npm run dev
 ```
-
-Open http://localhost:3000. Register your organization at `/register`, add janitors/team leaders from **Team**, sites from **Sites**, and a roster from **Schedule**. Log in as a janitor on a phone (or with your browser's location/camera simulated) to try clock-in/out — try toggling your browser to offline mid-flow to see the sync queue.
-
-## 4. Deploy
-
-- **Vercel**: import the GitHub repo, add the same env vars in Project Settings → Environment Variables, deploy.
-- **Supabase**: already live once you've run the five migrations — no separate deploy step for this build (no Edge Functions; push/WhatsApp sending run as Next.js API routes on Vercel instead).
-
-## Notes
-
-- Camera capture requires HTTPS (or localhost) — a browser requirement, not specific to this app.
-- The `shift-photos` storage bucket is public by design, so the app can build stable photo URLs directly.
-- The offline queue reliably handles one pending punch at a time; clocking in *and* out again before either has synced isn't supported yet (the button disables itself while a punch is pending, to avoid that case).
