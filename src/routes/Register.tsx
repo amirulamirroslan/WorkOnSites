@@ -74,7 +74,7 @@ export default function Register() {
 
   return (
     <div className="surface-dark min-h-screen flex flex-col justify-center items-center gap-6 px-6">
-      <img src="/logo.svg" alt="" width={64} height={64} className="rounded-2xl" aria-hidden />
+      <img src="/logo.png" alt="" width={64} height={64} className="rounded-2xl" aria-hidden />
       <h1 className="display text-xl font-semibold">Create your organization</h1>
 
       <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-3">

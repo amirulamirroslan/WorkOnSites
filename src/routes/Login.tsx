@@ -26,7 +26,7 @@ export default function Login() {
 
   return (
     <div className="surface-dark min-h-screen flex flex-col justify-center items-center gap-6 px-6">
-      <img src="/logo.svg" alt="" width={64} height={64} className="rounded-2xl" aria-hidden />
+      <img src="/logo.png" alt="" width={64} height={64} className="rounded-2xl" aria-hidden />
       <h1 className="display text-xl font-semibold">WorkOnSite</h1>
       <p className="text-white/60 text-sm -mt-4">Field Operations Made Simple</p>
 
