@@ -40,7 +40,7 @@ create policy "photos_insert_assigned_worker" on task_photos
     exists (
       select 1 from tasks t where t.id = task_id
       and t.organization_id = current_org_id()
-      and (t.worker_id = auth.uid() or current_role() in ('owner', 'team_leader'))
+      and (t.worker_id = auth.uid() or current_app_role() in ('owner', 'team_leader'))
     )
   );
 
@@ -49,4 +49,4 @@ create policy "issues_read_org" on issues
 create policy "issues_insert_org" on issues
   for insert with check (organization_id = current_org_id());
 create policy "issues_update_lead_or_owner" on issues
-  for update using (organization_id = current_org_id() and current_role() in ('owner', 'team_leader'));
+  for update using (organization_id = current_org_id() and current_app_role() in ('owner', 'team_leader'));

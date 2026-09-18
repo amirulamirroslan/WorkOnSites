@@ -28,7 +28,7 @@ create policy "sites_read_org" on sites
   for select using (organization_id = current_org_id());
 
 create policy "sites_write_owner" on sites
-  for all using (organization_id = current_org_id() and current_role() = 'owner');
+  for all using (organization_id = current_org_id() and current_app_role() = 'owner');
 
 create policy "assignments_read_org" on site_assignments
   for select using (
@@ -37,6 +37,6 @@ create policy "assignments_read_org" on site_assignments
 
 create policy "assignments_write_lead_or_owner" on site_assignments
   for all using (
-    current_role() in ('owner', 'team_leader')
+    current_app_role() in ('owner', 'team_leader')
     and exists (select 1 from sites s where s.id = site_id and s.organization_id = current_org_id())
   );

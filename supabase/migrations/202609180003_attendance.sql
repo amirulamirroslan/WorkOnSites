@@ -31,5 +31,5 @@ create policy "attendance_read_org" on attendance_events
 create policy "attendance_insert_self" on attendance_events
   for insert with check (
     organization_id = current_org_id()
-    and (worker_id = auth.uid() or current_role() in ('owner', 'team_leader'))
+    and (worker_id = auth.uid() or current_app_role() in ('owner', 'team_leader'))
   );

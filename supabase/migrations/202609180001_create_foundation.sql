@@ -28,7 +28,7 @@ create or replace function current_org_id() returns uuid as $$
   select organization_id from profiles where id = auth.uid();
 $$ language sql stable security definer;
 
-create or replace function current_role() returns user_role as $$
+create or replace function current_app_role() returns user_role as $$
   select role from profiles where id = auth.uid();
 $$ language sql stable security definer;
 
@@ -47,4 +47,4 @@ create policy "profiles_update_self" on profiles
 
 -- Only owners can insert new profiles (invite flow, Phase 1 auth work).
 create policy "profiles_insert_owner" on profiles
-  for insert with check (current_role() = 'owner');
+  for insert with check (current_app_role() = 'owner');

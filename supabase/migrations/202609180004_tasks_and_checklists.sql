@@ -53,7 +53,7 @@ alter table task_checklist_items enable row level security;
 create policy "templates_read_org" on checklist_templates
   for select using (organization_id = current_org_id());
 create policy "templates_write_owner" on checklist_templates
-  for all using (organization_id = current_org_id() and current_role() = 'owner');
+  for all using (organization_id = current_org_id() and current_app_role() = 'owner');
 
 create policy "template_items_read_org" on checklist_template_items
   for select using (
@@ -65,10 +65,10 @@ create policy "tasks_read_org" on tasks
 create policy "tasks_write_self_or_lead" on tasks
   for update using (
     organization_id = current_org_id()
-    and (worker_id = auth.uid() or current_role() in ('owner', 'team_leader'))
+    and (worker_id = auth.uid() or current_app_role() in ('owner', 'team_leader'))
   );
 create policy "tasks_insert_lead_or_owner" on tasks
-  for insert with check (organization_id = current_org_id() and current_role() in ('owner', 'team_leader'));
+  for insert with check (organization_id = current_org_id() and current_app_role() in ('owner', 'team_leader'));
 
 create policy "task_items_read_org" on task_checklist_items
   for select using (
@@ -79,6 +79,6 @@ create policy "task_items_update_assigned_worker" on task_checklist_items
     exists (
       select 1 from tasks t where t.id = task_id
       and t.organization_id = current_org_id()
-      and (t.worker_id = auth.uid() or current_role() in ('owner', 'team_leader'))
+      and (t.worker_id = auth.uid() or current_app_role() in ('owner', 'team_leader'))
     )
   );
