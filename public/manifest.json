@@ -1,0 +1,10 @@
+{
+  "name": "WorkOnSite",
+  "short_name": "WorkOnSite",
+  "description": "Field crew clock-in verification and checklists.",
+  "start_url": "/worker",
+  "display": "standalone",
+  "background_color": "#1C2321",
+  "theme_color": "#1C2321",
+  "icons": []
+}
