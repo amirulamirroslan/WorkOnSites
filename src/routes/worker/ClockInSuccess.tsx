@@ -1,19 +1,42 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppState } from "../../context/AppState";
-import { site } from "../../lib/mockData";
+import { useAuth } from "../../context/AuthContext";
+import { recordAttendanceEvent } from "../../lib/attendance";
 
 export default function ClockInSuccess() {
   const navigate = useNavigate();
-  const { setClockStatus, setClockInTime } = useAppState();
+  const { profile } = useAuth();
+  const { pendingClockIn, setClockStatus, setClockInTime } = useAppState();
+  const [status, setStatus] = useState<"saving" | "recorded" | "queued_offline" | "error">("saving");
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+  const [time] = useState(() => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
 
   useEffect(() => {
-    const now = new Date();
-    setClockStatus("clocked_in");
-    setClockInTime(now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
-  }, [setClockStatus, setClockInTime]);
-
-  const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    async function run() {
+      if (!profile || !pendingClockIn) {
+        setStatus("error");
+        return;
+      }
+      const result = await recordAttendanceEvent({
+        organizationId: profile.organization_id,
+        workerId: profile.id,
+        site: pendingClockIn.site,
+        eventType: "clock_in",
+        latitude: pendingClockIn.latitude,
+        longitude: pendingClockIn.longitude,
+        accuracy: pendingClockIn.accuracy,
+        photoBlob: pendingClockIn.photoBlob,
+        overrideReason: pendingClockIn.overrideReason,
+      });
+      setClockStatus("clocked_in");
+      setClockInTime(time);
+      setStatus(result.status);
+      setVerificationStatus(result.verificationStatus);
+    }
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="surface-dark min-h-screen flex flex-col items-center justify-center px-6 text-center">
@@ -22,12 +45,29 @@ export default function ClockInSuccess() {
       </div>
       <h1 className="display text-xl font-semibold mb-1">Clocked In!</h1>
       <p className="font-display text-2xl font-bold mb-1">{time}</p>
-      <p className="text-white/50 text-sm mb-8">{site.name}</p>
+      <p className="text-white/50 text-sm mb-8">{pendingClockIn?.site.name}</p>
 
-      <div className="w-full rounded-card bg-navy-800 p-4 mb-8 space-y-2 text-sm text-left">
+      <div className="w-full rounded-card bg-navy-800 p-4 mb-4 space-y-2 text-sm text-left">
         <div className="flex justify-between"><span className="text-white/60">Location verified</span><span className="text-success-500">✓</span></div>
-        <div className="flex justify-between"><span className="text-white/60">Face captured</span><span className="text-success-500">✓</span></div>
+        <div className="flex justify-between">
+          <span className="text-white/60">Photo captured</span>
+          <span className={pendingClockIn?.photoBlob ? "text-success-500" : "text-white/40"}>
+            {pendingClockIn?.photoBlob ? "✓" : "Skipped"}
+          </span>
+        </div>
       </div>
+
+      {status === "queued_offline" && (
+        <p className="text-warning-500 text-xs mb-6">
+          You're offline — this clock-in was saved on your device and will sync automatically once you're back online.
+        </p>
+      )}
+      {verificationStatus === "exception_override" && (
+        <p className="text-warning-500 text-xs mb-6">
+          Recorded as an out-of-range exception — flagged for your team leader/owner to review.
+        </p>
+      )}
+      {status === "saving" && <p className="text-white/40 text-xs mb-6">Saving…</p>}
 
       <button className="action-band" onClick={() => navigate("/worker/tasks")}>
         View Today's Tasks

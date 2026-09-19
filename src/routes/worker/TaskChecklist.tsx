@@ -1,22 +1,41 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppState } from "../../context/AppState";
+import { useAuth } from "../../context/AuthContext";
+import { fetchTaskPhotos, uploadTaskPhoto, type TaskPhoto } from "../../lib/tasks";
 
 export default function TaskChecklist() {
   const { taskId } = useParams();
   const navigate = useNavigate();
-  const { tasks, setTaskChecklistItem } = useAppState();
+  const { profile } = useAuth();
+  const { tasks, setTaskChecklistItem, completeTask } = useAppState();
   const task = tasks.find((t) => t.id === taskId);
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<TaskPhoto[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (taskId) fetchTaskPhotos(taskId).then(setPhotos);
+  }, [taskId]);
 
   if (!task) return null;
 
   const allRequiredDone = task.checklist.every((c) => !c.isRequired || c.isCompleted);
 
-  function addPhoto() {
-    // Real build: open camera/file picker, upload to Supabase Storage,
-    // insert a task_photos row.
-    setPhotos((p) => [...p, `photo-${p.length + 1}`]);
+  async function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !profile || !taskId) return;
+    setUploading(true);
+    const photo = await uploadTaskPhoto(taskId, profile.id, file);
+    if (photo) setPhotos((p) => [...p, photo]);
+    setUploading(false);
+  }
+
+  async function handleComplete() {
+    if (!task) return;
+    await completeTask(task.id);
+    navigate("/worker/tasks");
   }
 
   return (
@@ -48,22 +67,23 @@ export default function TaskChecklist() {
 
       <section className="px-6 mb-8">
         <p className="text-white/50 text-xs uppercase tracking-wide mb-2">Photos (Before / After)</p>
+        <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileSelected} />
         <div className="grid grid-cols-3 gap-2">
           {photos.map((p) => (
-            <div key={p} className="aspect-square rounded-lg bg-navy-800" />
+            <img key={p.id} src={p.url} alt="" className="aspect-square rounded-lg object-cover bg-navy-800" />
           ))}
-          <button onClick={addPhoto} className="aspect-square rounded-lg border border-dashed border-white/20 flex items-center justify-center text-white/40 text-2xl">
-            +
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="aspect-square rounded-lg border border-dashed border-white/20 flex items-center justify-center text-white/40 text-2xl disabled:opacity-40"
+          >
+            {uploading ? "…" : "+"}
           </button>
         </div>
       </section>
 
       <div className="px-6">
-        <button
-          className="action-band disabled:opacity-40"
-          disabled={!allRequiredDone}
-          onClick={() => navigate("/worker/tasks")}
-        >
+        <button className="action-band disabled:opacity-40" disabled={!allRequiredDone} onClick={handleComplete}>
           Mark as Completed
         </button>
       </div>

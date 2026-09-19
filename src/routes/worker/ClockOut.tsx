@@ -1,5 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useAppState } from "../../context/AppState";
+import { useAuth } from "../../context/AuthContext";
+import { getCurrentPosition, recordAttendanceEvent } from "../../lib/attendance";
 
 export function ClockOutConfirm() {
   const navigate = useNavigate();
@@ -27,8 +30,39 @@ export function ClockOutConfirm() {
 
 export function ClockOutSuccess() {
   const navigate = useNavigate();
-  const { setClockStatus, clockInTime } = useAppState();
-  const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const { profile } = useAuth();
+  const { pendingClockIn, setClockStatus, clockInTime } = useAppState();
+  const [status, setStatus] = useState<"saving" | "recorded" | "queued_offline" | "error">("saving");
+  const [time] = useState(() => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+
+  useEffect(() => {
+    async function run() {
+      // Clock-out reuses the site captured at clock-in (same shift, same
+      // site) — only the position needs re-checking, since GPS can move.
+      if (!profile || !pendingClockIn) {
+        setStatus("error");
+        return;
+      }
+      try {
+        const pos = await getCurrentPosition();
+        const result = await recordAttendanceEvent({
+          organizationId: profile.organization_id,
+          workerId: profile.id,
+          site: pendingClockIn.site,
+          eventType: "clock_out",
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy ?? null,
+          photoBlob: null,
+        });
+        setStatus(result.status);
+      } catch {
+        setStatus("error");
+      }
+    }
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="surface-dark min-h-screen flex flex-col items-center justify-center px-6 text-center">
@@ -37,7 +71,13 @@ export function ClockOutSuccess() {
       </div>
       <h1 className="display text-xl font-semibold mb-1">Clocked Out!</h1>
       <p className="font-display text-2xl font-bold mb-1">{time}</p>
-      <p className="text-white/50 text-sm mb-8">Clocked in at {clockInTime ?? "—"}</p>
+      <p className="text-white/50 text-sm mb-4">Clocked in at {clockInTime ?? "—"}</p>
+
+      {status === "queued_offline" && (
+        <p className="text-warning-500 text-xs mb-4">
+          You're offline — this clock-out was saved on your device and will sync once you're back online.
+        </p>
+      )}
 
       <button
         className="action-band"

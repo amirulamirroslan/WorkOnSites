@@ -1,54 +1,66 @@
 # Build progress
 
-## Built and working (this session)
-- Real logo/favicon/PWA icons (blue rounded-square mark, pin + checkmark) — was completely missing before;
-  wired into `index.html`, `vite.config.ts` PWA manifest, Login and NavRail
-- `.gitignore` — was missing entirely
-- Owner self-registration (`/register`): creates `organizations` + owner `profiles` row client-side
-- Migration `202609180006_registration_and_admin.sql`: RLS policies enabling the org-creation +
-  first-owner bootstrap insert (previously impossible — `profiles_insert_owner` required an existing
-  owner, a chicken-and-egg deadlock for the very first user), plus a `profiles.username` column
-- `create-team-member` Edge Function (`supabase/functions/`): owner-only, service-role-backed creation
-  of team_leader/worker accounts with a synthesized `username@workonsite.internal` email + random temp
-  password (shown once) — since field workers often have no real email
-- `AuthContext.signIn` now accepts a bare username (auto-maps to the synthetic email) alongside real email
-- `WorkersPage` rebuilt off real Supabase data (was mock-only) with an owner-only "+ Add team member" modal
+This file tracks current state, not a session-by-session log — it's rewritten
+to reflect where things stand now, so it doesn't just grow forever.
 
-## Not yet done
-- Edge Function needs deploying by the project owner (`supabase functions deploy create-team-member`) —
-  not something doable from this side without their Supabase CLI login
-- Team-leader-scoped worker visibility (currently every org member sees the full workers list, not
-  scoped to a team leader's assigned sites)
+## Real (backed by Supabase, not mock data)
+- **Auth & accounts**: owner self-registration (`/register`, creates org +
+  owner profile), `create-team-member` Edge Function for owner-added
+  team leaders/workers (synthetic `username@workonsite.internal` email +
+  one-time temp password, since field workers often have no real email),
+  real sign-in for both (username or email)
+- **Sites**: owner CRUD with a map-picked location + geofence radius
+  (Leaflet/OpenStreetMap, no API key), worker/team-leader assignment per site
+- **Attendance**: clock-in/out does a real GPS geofence check against the
+  worker's actual assigned site (with a picker if they have more than one),
+  uploads the capture photo to Storage, writes real `attendance_events` rows.
+  Out-of-range clock-ins can be submitted with a reason as a self-reported
+  exception (`verification_status = 'exception_override'`), visible to
+  owner/team leader on the Attendance page
+- **Offline queueing**: a clock-in/out made without connection (or one that
+  fails mid-request) is queued in IndexedDB (`src/lib/offlineQueue.ts`) and
+  auto-synced on reconnect (`syncOfflineQueue()`, wired into `OfflineBanner`)
+- **Tasks & checklists**: owner assigns tasks (worker + site + checklist
+  template + date) from the Tasks page; template items are copied onto the
+  task at creation time so later template edits don't retroactively change
+  an in-progress task. Owner also has a full template editor (Checklists
+  page: add/remove items, toggle required/photo-required). Worker's task
+  list/checklist reads and writes real data (`src/lib/tasks.ts`) — checking
+  an item, completing a task, and uploading a checklist photo (to a
+  `task-photos` bucket) all persist for real
+- **Reports**: Daily/Weekly/Monthly toggle computed from live attendance +
+  task data, plus CSV export of the period's attendance records
+- **Team-leader/worker scoping**: `profiles` and `attendance_events` used to
+  be readable org-wide by anyone — any worker or team leader could see every
+  other worker's profile and attendance data. Now scoped: owner sees
+  everything, team leader sees only people/records on sites they're assigned
+  to (`shares_a_site_with()`), worker sees only their own
+- **Supervisor override review**: an out-of-range clock-in submitted with a
+  reason (self-reported exception) now shows an "Approve" action to
+  owner/team leader on the Attendance page — sets the schema's `override_by`
+  column, which existed from the start but had no UPDATE policy or UI at
+  all before. A reviewed exception shows "Reviewed" next to it
 
-## Built and working
-- Full worker mobile flow: Home (clock-in aware) → Clock In (Location → Face Capture → Success) →
-  Task List → Task Checklist + photo evidence → Clock Out (confirm → success) → Report Issue → Profile
-- Real Supabase auth wiring: `AuthContext` (session + profile/role lookup), functional `Login.tsx`
-  calling `supabase.auth.signInWithPassword`, `RoleRedirect` sending each role to its home
-- Team Leader (`/lead`): Overview, Sites, Workers, Attendance, Issues (acknowledge/resolve actions),
-  Reports — all real routes on the nav rail
-- Owner (`/owner`): Dashboard, Sites, Workers, Assignments, Tasks, Checklists, Attendance, Issues,
-  Reports, Settings (incl. sign out) — every nav item from the spec is a real route
-- Design tokens from your mockups; dark surface for worker mobile, light surface for desktop
-- Type-checks clean (`npx tsc -b`) and builds clean (`npx vite build`)
+## Still mock data (`src/lib/mockData.ts`) — flagged, not yet touched
+- Issues page (`issuesList`)
+- Lead Overview's live-workers panel
+- Owner Dashboard's KPI/site-performance cards
+- Assignments page
 
-## Database schema (SQL migrations, not yet applied — needs your Supabase project)
-- Phase 1: organizations, profiles, roles, RLS
-- Phase 2: sites, geofence, site_assignments
-- Phase 3: attendance_events (clock in/out, location, verification status, capture photo)
-- Phase 4/5: checklist_templates, tasks, task_checklist_items
-- Phase 6: task_photos, issues
+## Known gaps / possible next steps
+- The `create-team-member` Edge Function needs deploying by the project
+  owner (`supabase functions deploy create-team-member`) — not something
+  doable from this side without their Supabase CLI login
 
-## Not built yet (all data is local mock data in `src/lib/mockData.ts` right now)
-- Every page above reads mock data, not live Supabase queries — the shapes in mockData.ts already
-  match the migration tables 1:1, so this is a query swap, not a rebuild
-- Create/edit forms (Sites, Workers, Assignments, Checklist template editor) — pages are read-only
-  lists right now, matching what's visible in the mockups
-- Offline queue/sync
-- PWA install polish beyond the basic manifest, and Capacitor/Android packaging
+## Setup checklist
+1. Run all migrations in `supabase/migrations/` in filename order (001–010)
+2. Deploy the Edge Function: `npx supabase functions deploy create-team-member`
+3. Copy `.env.example` → `.env`, fill in your Supabase URL + anon key
+4. `npm install && npm run dev`
 
-## Suggested next step
-Connect Supabase (your side), run the five migrations in order, create one test user per role, and
-confirm `RoleRedirect` sends each to the right dashboard. Then swap `mockData.ts` reads for real
-Supabase queries page by page — Sites and Workers first, since Attendance/Issues/Tasks depend on
-them existing.
+## Design reference
+Built against the supplied mockup images (splash, worker dashboard, location
+verification, face capture, task list/checklist, clock-out, offline mode,
+issue reporting, team leader/owner dashboards, sites/profile/reports/settings
+screens) — ask if something doesn't match, since the mockups are the source
+of truth over anything written here.

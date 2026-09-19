@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Suspense, lazy } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import { AppStateProvider } from "./context/AppState";
 import BottomNav from "./components/BottomNav";
+import OfflineBanner from "./components/OfflineBanner";
 import Login from "./routes/Login";
+import Splash from "./routes/Splash";
 import Register from "./routes/Register";
 import RoleRedirect from "./routes/RoleRedirect";
 import WorkerHome from "./routes/worker/WorkerHome";
@@ -18,7 +21,6 @@ import { LeadLayout } from "./routes/lead/LeadOverview";
 import LeadOverview from "./routes/lead/LeadOverview";
 import { OwnerLayout } from "./routes/owner/OwnerDashboard";
 import OwnerDashboard from "./routes/owner/OwnerDashboard";
-import SitesPage from "./routes/shared/SitesPage";
 import WorkersPage from "./routes/shared/WorkersPage";
 import AttendancePage from "./routes/shared/AttendancePage";
 import IssuesPage from "./routes/shared/IssuesPage";
@@ -27,6 +29,10 @@ import AssignmentsPage from "./routes/owner/AssignmentsPage";
 import TasksPage from "./routes/owner/TasksPage";
 import ChecklistsPage from "./routes/owner/ChecklistsPage";
 import SettingsPage from "./routes/owner/SettingsPage";
+
+// Leaflet (~150kb) is only needed on the Sites page — code-split it so
+// worker-side mobile visits never download map code they'll never use.
+const SitesPage = lazy(() => import("./routes/shared/SitesPage"));
 
 function WorkerLayout() {
   return (
@@ -45,8 +51,10 @@ export default function App() {
     <AuthProvider>
       <AppStateProvider>
         <BrowserRouter>
+          <OfflineBanner />
           <Routes>
             <Route path="/" element={<RoleRedirect />} />
+            <Route path="/splash" element={<Splash />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
@@ -65,7 +73,14 @@ export default function App() {
 
             <Route element={<LeadLayout />}>
               <Route path="/lead" element={<LeadOverview />} />
-              <Route path="/lead/sites" element={<SitesPage />} />
+              <Route
+                path="/lead/sites"
+                element={
+                  <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
+                    <SitesPage />
+                  </Suspense>
+                }
+              />
               <Route path="/lead/workers" element={<WorkersPage />} />
               <Route path="/lead/attendance" element={<AttendancePage />} />
               <Route path="/lead/issues" element={<IssuesPage />} />
@@ -74,7 +89,14 @@ export default function App() {
 
             <Route element={<OwnerLayout />}>
               <Route path="/owner" element={<OwnerDashboard />} />
-              <Route path="/owner/sites" element={<SitesPage />} />
+              <Route
+                path="/owner/sites"
+                element={
+                  <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
+                    <SitesPage />
+                  </Suspense>
+                }
+              />
               <Route path="/owner/workers" element={<WorkersPage />} />
               <Route path="/owner/assignments" element={<AssignmentsPage />} />
               <Route path="/owner/tasks" element={<TasksPage />} />

@@ -50,3 +50,22 @@ If your Supabase project has **email confirmation** on, owner registration
 will ask the new owner to confirm their email before the org/profile get
 created (Supabase won't hand back a session until then) — either turn that
 off for now (Authentication → Providers → Email) or expect that extra step.
+
+## Sites, attendance & offline support
+
+Run migration `202609180007_attendance_storage.sql` (7th, after 001-006) —
+it creates the `attendance-photos` storage bucket used by clock-in photo
+capture.
+
+- **Owner**: add sites from the "Sites" page ("+ Add site") — tap the map to
+  place the pin (or "Use my location"), set a geofence radius, then use
+  "Manage" on a site to assign workers/team leaders to it. A worker with no
+  site assignment will see that explained on the Clock In screen instead of
+  a confusing GPS error.
+- **Clock in/out** now does a real GPS check against the assigned site's
+  geofence, uploads the capture photo to Supabase Storage, and writes a real
+  `attendance_events` row — this replaced the earlier simulated version.
+- **Offline**: if a clock-in/out happens with no connection (or a request
+  fails mid-flight), it's queued in the browser's IndexedDB instead of lost,
+  and synced automatically the next time the app detects it's back online
+  (or on next app load if already online by then).

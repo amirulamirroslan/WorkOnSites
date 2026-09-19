@@ -5,6 +5,7 @@ const statusColor: Record<string, string> = {
   completed: "text-success-500",
   in_progress: "text-warning-500",
   pending: "text-white/40",
+  blocked: "text-danger-500",
 };
 
 export default function TaskList() {
