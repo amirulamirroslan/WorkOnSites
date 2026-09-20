@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import { AppStateProvider } from "./context/AppState";
 import BottomNav from "./components/BottomNav";
+import NavRail from "./components/NavRail";
 import OfflineBanner from "./components/OfflineBanner";
 import Login from "./routes/Login";
 import Splash from "./routes/Splash";
@@ -37,10 +38,23 @@ import SettingsPage from "./routes/owner/SettingsPage";
 // worker-side mobile visits never download map code they'll never use.
 const SitesPage = lazy(() => import("./routes/shared/SitesPage"));
 
+const workerNav = [
+  { to: "/worker", label: "Home" },
+  { to: "/worker/tasks", label: "Tasks" },
+  { to: "/worker/report-issue", label: "Report" },
+  { to: "/worker/profile", label: "Profile" },
+];
+
+// Phone: bottom tab bar. Laptop: left sidebar (same look as owner/team leader).
 function WorkerLayout() {
   return (
-    <div>
-      <Outlet />
+    <div className="lg:flex">
+      <div className="hidden lg:block">
+        <NavRail items={workerNav} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <Outlet />
+      </div>
       <BottomNav />
     </div>
   );

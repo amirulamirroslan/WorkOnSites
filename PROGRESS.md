@@ -63,6 +63,12 @@ to reflect where things stand now, so it doesn't just grow forever.
   column, which existed from the start but had no UPDATE policy or UI at
   all before. A reviewed exception shows "Reviewed" next to it
 
+## Responsive layout (phone / tablet / laptop)
+- Every screen adapts to the window: worker Home/Tasks/Report/Profile use a bottom tab bar on phones and a left sidebar + wide content (Home is two-column) on laptops; standalone flows (clock-in, checklist, clock-out) are edge-to-edge on phones and a centred card on laptops
+- Owner / team leader: sidebar on laptops, a top bar + slide-in menu drawer below 1024px; stat grids and headings scale down on phones
+- Splash/Login/Register/Forgot/Set password: full-width navy screen with the skyline spanning the bottom on laptops, form in a glass panel
+- Breakpoints: `md` = 768px (wider phone column, centred cards), `lg` = 1024px (sidebar layouts)
+
 ## Forgot / reset password
 - **Owners (real email):** `Forgot password?` on Login → `/forgot-password` sends a Supabase reset email → link opens `/reset-password` to set a new password. Needs the site URL + `https://<your-domain>/reset-password` in Supabase → Authentication → URL Configuration → Redirect URLs
 - **Team leaders / workers (username, no real email):** owner (any team leader/worker) or team leader (workers on their sites) taps **Reset password** on the Workers page → `reset-team-member-password` Edge Function generates a temp password shown once to hand over. The account is flagged `must_change_password`, so their next sign-in is forced through `/set-password`. New accounts from `create-team-member` get the same flag

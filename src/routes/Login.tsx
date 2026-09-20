@@ -26,14 +26,14 @@ export default function Login() {
   }
 
   return (
-    <AuthShell skyline="bottom">
+    <AuthShell skyline="bottom" panel>
       <div className="flex flex-col items-center text-center mt-6">
         <img src="/logo.png" alt="" width={64} height={64} className="rounded-2xl shadow-glow mb-4" aria-hidden />
         <Wordmark size="text-xl" />
         <p className="text-white/70 text-sm mt-1">Welcome back — sign in to continue</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full mt-auto flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="w-full mt-auto md:mt-8 flex flex-col gap-3">
         <input
           type="text"
           placeholder="Email or username"

@@ -31,7 +31,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <AuthShell skyline="none">
+    <AuthShell skyline="none" panel>
       <div className="flex flex-col items-center text-center mt-6 mb-8">
         <img src="/logo.png" alt="" width={56} height={56} className="rounded-2xl shadow-glow mb-3" aria-hidden />
         <Wordmark size="text-xl" />

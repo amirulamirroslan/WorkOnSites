@@ -30,7 +30,7 @@ export default function SetPassword({ mode }: { mode: "recovery" | "forced" }) {
   if (!session) {
     if (mode === "forced") return <Navigate to="/login" replace />;
     return (
-      <AuthShell skyline="none">
+      <AuthShell skyline="none" panel>
         <div className="flex flex-col items-center text-center mt-16">
           <h1 className="display text-xl font-semibold mb-2">Reset link expired</h1>
           <p className="text-white/70 text-sm mb-8">
@@ -69,7 +69,7 @@ export default function SetPassword({ mode }: { mode: "recovery" | "forced" }) {
   }
 
   return (
-    <AuthShell skyline="none">
+    <AuthShell skyline="none" panel>
       <div className="flex flex-col items-center text-center mb-8 mt-4">
         <img src="/logo.png" alt="" width={56} height={56} className="rounded-2xl shadow-glow mb-3" aria-hidden />
         <h1 className="display text-xl font-semibold">

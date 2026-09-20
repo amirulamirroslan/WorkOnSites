@@ -16,9 +16,9 @@ const navItems = [
 
 export function LeadLayout() {
   return (
-    <div className="surface-light flex min-h-screen">
+    <div className="surface-light lg:flex min-h-screen">
       <NavRail items={navItems} />
-      <main className="flex-1 p-8 min-w-0">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
         <Outlet />
       </main>
     </div>
@@ -36,13 +36,13 @@ export default function LeadOverview() {
     <div>
       <div className="flex items-start justify-between mb-7">
         <div>
-          <h1 className="font-display text-xl font-bold">{greeting()}, {first}</h1>
+          <h1 className="font-display text-lg sm:text-xl font-bold">{greeting()}, {first}</h1>
           <p className="text-sm text-ink-900/50 mt-1">Here's what's happening across your sites today</p>
         </div>
         <DateChip />
       </div>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <StatCard label="Total Workers" value={String(liveWorkers.length)} Icon={Users} tone="brand" />
         <StatCard label="On Site" value={String(onSite)} Icon={UserCheck} tone="success" />
         <StatCard label="Late" value={String(late)} Icon={Clock} tone="warning" />

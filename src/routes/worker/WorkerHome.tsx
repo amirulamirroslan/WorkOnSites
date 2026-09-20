@@ -81,6 +81,7 @@ export default function WorkerHome() {
 
   return (
     <MobileScreen
+      wide
       header={
         <div className="flex items-center gap-3">
           <Avatar name={profile?.full_name ?? ""} size={52} />
@@ -93,6 +94,8 @@ export default function WorkerHome() {
         </div>
       }
     >
+      <div className="lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
+      <div>
       <button
         onClick={() => navigate(clockedIn ? "/worker/clock-out" : "/worker/clock-in/location")}
         className="w-full text-left rounded-2xl bg-gradient-to-br from-brand-light via-brand to-brand-dark text-white p-5 shadow-glow flex items-center gap-4 active:scale-[0.99] transition-transform -mt-1"
@@ -121,7 +124,9 @@ export default function WorkerHome() {
         </div>
       </section>
 
-      <section className="mt-6">
+      </div>
+
+      <section className="mt-6 lg:mt-0">
         <div className="flex items-center justify-between mb-3">
           <p className="font-display font-semibold">Today's Tasks</p>
           <button className="text-brand text-xs font-semibold" onClick={() => navigate("/worker/tasks")}>
@@ -146,6 +151,7 @@ export default function WorkerHome() {
           ))}
         </div>
       </section>
+      </div>
     </MobileScreen>
   );
 }

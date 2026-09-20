@@ -20,9 +20,9 @@ const navItems = [
 
 export function OwnerLayout() {
   return (
-    <div className="surface-light flex min-h-screen">
+    <div className="surface-light lg:flex min-h-screen">
       <NavRail items={navItems} />
-      <main className="flex-1 p-8 min-w-0">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
         <Outlet />
       </main>
     </div>
@@ -34,13 +34,13 @@ export default function OwnerDashboard() {
     <div>
       <div className="flex items-start justify-between mb-7">
         <div>
-          <h1 className="font-display text-xl font-bold">Operations Overview</h1>
+          <h1 className="font-display text-lg sm:text-xl font-bold">Operations Overview</h1>
           <p className="text-sm text-ink-900/50 mt-1">Performance across all of your sites</p>
         </div>
         <DateChip />
       </div>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <StatCard label="Attendance" value={ownerKpis.attendance} Icon={CalendarCheck} tone="brand" />
         <StatCard label="Task Completion" value={ownerKpis.taskCompletion} Icon={ListChecks} tone="success" />
         <StatCard label="Sites Active" value={String(ownerKpis.sitesActive)} Icon={MapPin} tone="brand" />
@@ -68,8 +68,8 @@ export default function OwnerDashboard() {
         </Panel>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl mobile-bg text-white p-8 h-40 flex items-center shadow-soft">
-        <Skyline className="absolute inset-y-0 right-28 h-full w-[52%] opacity-75" />
+      <div className="relative overflow-hidden rounded-2xl mobile-bg text-white p-6 sm:p-8 h-40 flex items-center shadow-soft">
+        <Skyline className="hidden sm:block absolute inset-y-0 right-28 h-full w-[52%] opacity-75" />
         <div className="relative flex items-center justify-between w-full">
           <p className="display text-xl font-bold leading-snug max-w-xs">Cleaner Sites. Safer People. Better Work.</p>
           <div className="flex items-center gap-2.5">

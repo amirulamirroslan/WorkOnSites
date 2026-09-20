@@ -33,9 +33,9 @@ export function StatCard({
   sub?: string;
 }) {
   return (
-    <div className="card p-5 flex items-center gap-4">
+    <div className="card p-3.5 sm:p-5 flex items-center gap-3 sm:gap-4">
       {Icon && (
-        <span className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${tones[tone]}`}>
+        <span className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 ${tones[tone]}`}>
           <Icon size={20} />
         </span>
       )}

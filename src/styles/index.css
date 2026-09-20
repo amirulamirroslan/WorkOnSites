@@ -56,3 +56,16 @@
     @apply flex items-center justify-between py-3 border-b border-cloud-100 last:border-0;
   }
 }
+
+/* Skyline fades out toward the bottom on phones (so it melts into the button
+   area); on wide screens it sits on the bottom edge with no fade. */
+.skyline-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent);
+}
+@media (min-width: 768px) {
+  .skyline-fade {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
