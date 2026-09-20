@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
+import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 
 const categories = [
   { id: "access_problem", label: "Access Problem" },
@@ -11,8 +14,43 @@ const categories = [
 
 export default function ReportIssue() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [category, setCategory] = useState<string | null>(null);
   const [description, setDescription] = useState("");
+  const [site, setSite] = useState<AssignedSite | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (profile) getMyAssignedSite(profile.id).then(setSite);
+  }, [profile]);
+
+  async function handleSubmit() {
+    if (!profile || !category || !description) return;
+    setSubmitting(true);
+    setError(null);
+
+    if (!site) {
+      setSubmitting(false);
+      setError("You need to be assigned to a site before reporting an issue.");
+      return;
+    }
+
+    const { error: insertErr } = await supabase.from("issues").insert({
+      organization_id: profile.organization_id,
+      site_id: site.id,
+      reported_by: profile.id,
+      category,
+      description,
+    });
+
+    setSubmitting(false);
+    if (insertErr) {
+      setError(insertErr.message);
+      return;
+    }
+    navigate(-1);
+  }
 
   return (
     <div className="surface-dark min-h-screen flex flex-col px-6 pt-10 pb-8">
@@ -38,15 +76,17 @@ export default function ReportIssue() {
         onChange={(e) => setDescription(e.target.value)}
         rows={4}
         placeholder="Describe the issue…"
-        className="rounded-card bg-navy-800 p-4 text-sm text-white placeholder-white/30 mb-8 resize-none"
+        className="rounded-card bg-navy-800 p-4 text-sm text-white placeholder-white/30 mb-4 resize-none"
       />
+
+      {error && <p className="text-danger-500 text-xs mb-4">{error}</p>}
 
       <button
         className="action-band disabled:opacity-40"
-        disabled={!category || !description}
-        onClick={() => navigate(-1)}
+        disabled={!category || !description || submitting}
+        onClick={handleSubmit}
       >
-        Submit Report
+        {submitting ? "Submitting…" : "Submit Report"}
       </button>
     </div>
   );

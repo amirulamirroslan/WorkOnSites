@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { MapPin, ChevronRight } from "lucide-react";
 import ProgressRing from "../../components/ProgressRing";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
@@ -41,7 +42,7 @@ const statusLabel: Record<string, string> = {
 
 export default function WorkerHome() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, profileLoading } = useAuth();
   const { tasks, clockStatus, clockInTime } = useAppState();
   const [site, setSite] = useState<AssignedSite | null>(null);
   const completedCount = tasks.filter((t) => t.status === "completed").length;
@@ -51,6 +52,17 @@ export default function WorkerHome() {
   useEffect(() => {
     if (profile) getMyAssignedSite(profile.id).then(setSite);
   }, [profile]);
+
+  if (!profileLoading && !profile) {
+    return (
+      <div className="surface-dark min-h-screen flex flex-col items-center justify-center px-8 text-center">
+        <p className="font-display text-lg font-semibold mb-2">Account not set up</p>
+        <p className="text-white/50 text-sm">
+          We couldn't find your worker profile. Ask your organization owner to check your account.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="surface-dark min-h-screen pb-24">
@@ -62,13 +74,16 @@ export default function WorkerHome() {
         <span className="text-white/40 text-xs">{today}</span>
       </header>
 
-      <section className="mx-6 rounded-card bg-navy-800 p-5">
+      <section className="mx-6 rounded-card bg-navy-800 p-5 shadow-lg shadow-black/20 border border-white/5">
         <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="font-display font-semibold">{site?.name ?? "No site assigned"}</p>
-            <p className="text-white/40 text-xs">
-              {clockStatus === "clocked_in" ? `Clocked in at ${clockInTime ?? "—"}` : "Tap to verify location & face"}
-            </p>
+          <div className="flex items-start gap-2">
+            <MapPin size={16} className="text-brand mt-1 shrink-0" strokeWidth={2.2} />
+            <div>
+              <p className="font-display font-semibold">{site?.name ?? "No site assigned"}</p>
+              <p className="text-white/40 text-xs">
+                {clockStatus === "clocked_in" ? `Clocked in at ${clockInTime ?? "—"}` : "Tap to verify location & face"}
+              </p>
+            </div>
           </div>
           <span
             className={`text-xs px-3 py-1 rounded-pill shrink-0 ${
@@ -92,7 +107,7 @@ export default function WorkerHome() {
         )}
       </section>
 
-      <section className="mx-6 mt-6 rounded-card bg-navy-800 p-6 flex items-center gap-6">
+      <section className="mx-6 mt-6 rounded-card bg-navy-800 p-6 flex items-center gap-6 shadow-lg shadow-black/20 border border-white/5">
         <ProgressRing percent={percent} />
         <div>
           <p className="font-display text-lg font-semibold">Today's Progress</p>
@@ -109,7 +124,7 @@ export default function WorkerHome() {
             View all
           </button>
         </div>
-        <div className="rounded-card bg-navy-800 divide-y divide-white/5">
+        <div className="rounded-card bg-navy-800 divide-y divide-white/5 shadow-lg shadow-black/20 border border-white/5">
           {tasks.length === 0 && <p className="text-white/40 text-sm px-4 py-4">No tasks assigned for today.</p>}
           {tasks.slice(0, 5).map((task) => (
             <button
@@ -122,6 +137,7 @@ export default function WorkerHome() {
                 <p className="text-sm font-medium truncate">{task.title}</p>
                 <p className="text-white/40 text-xs">{statusLabel[task.status]}</p>
               </div>
+              <ChevronRight size={16} className="text-white/20 shrink-0" />
             </button>
           ))}
         </div>

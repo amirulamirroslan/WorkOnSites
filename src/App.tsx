@@ -8,6 +8,7 @@ import Login from "./routes/Login";
 import Splash from "./routes/Splash";
 import Register from "./routes/Register";
 import RoleRedirect from "./routes/RoleRedirect";
+import RequireRole from "./routes/RequireRole";
 import WorkerHome from "./routes/worker/WorkerHome";
 import ClockInLocation from "./routes/worker/ClockInLocation";
 import ClockInFace from "./routes/worker/ClockInFace";
@@ -58,53 +59,59 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            <Route element={<WorkerLayout />}>
-              <Route path="/worker" element={<WorkerHome />} />
-              <Route path="/worker/tasks" element={<TaskList />} />
-              <Route path="/worker/report-issue" element={<ReportIssue />} />
-              <Route path="/worker/profile" element={<WorkerProfile />} />
-            </Route>
-            <Route path="/worker/tasks/:taskId" element={<TaskChecklist />} />
-            <Route path="/worker/clock-in/location" element={<ClockInLocation />} />
-            <Route path="/worker/clock-in/face" element={<ClockInFace />} />
-            <Route path="/worker/clock-in/success" element={<ClockInSuccess />} />
-            <Route path="/worker/clock-out" element={<ClockOutConfirm />} />
-            <Route path="/worker/clock-out/success" element={<ClockOutSuccess />} />
-
-            <Route element={<LeadLayout />}>
-              <Route path="/lead" element={<LeadOverview />} />
-              <Route
-                path="/lead/sites"
-                element={
-                  <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
-                    <SitesPage />
-                  </Suspense>
-                }
-              />
-              <Route path="/lead/workers" element={<WorkersPage />} />
-              <Route path="/lead/attendance" element={<AttendancePage />} />
-              <Route path="/lead/issues" element={<IssuesPage />} />
-              <Route path="/lead/reports" element={<ReportsPage />} />
+            <Route element={<RequireRole allow={["worker"]} />}>
+              <Route element={<WorkerLayout />}>
+                <Route path="/worker" element={<WorkerHome />} />
+                <Route path="/worker/tasks" element={<TaskList />} />
+                <Route path="/worker/report-issue" element={<ReportIssue />} />
+                <Route path="/worker/profile" element={<WorkerProfile />} />
+              </Route>
+              <Route path="/worker/tasks/:taskId" element={<TaskChecklist />} />
+              <Route path="/worker/clock-in/location" element={<ClockInLocation />} />
+              <Route path="/worker/clock-in/face" element={<ClockInFace />} />
+              <Route path="/worker/clock-in/success" element={<ClockInSuccess />} />
+              <Route path="/worker/clock-out" element={<ClockOutConfirm />} />
+              <Route path="/worker/clock-out/success" element={<ClockOutSuccess />} />
             </Route>
 
-            <Route element={<OwnerLayout />}>
-              <Route path="/owner" element={<OwnerDashboard />} />
-              <Route
-                path="/owner/sites"
-                element={
-                  <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
-                    <SitesPage />
-                  </Suspense>
-                }
-              />
-              <Route path="/owner/workers" element={<WorkersPage />} />
-              <Route path="/owner/assignments" element={<AssignmentsPage />} />
-              <Route path="/owner/tasks" element={<TasksPage />} />
-              <Route path="/owner/checklists" element={<ChecklistsPage />} />
-              <Route path="/owner/attendance" element={<AttendancePage />} />
-              <Route path="/owner/issues" element={<IssuesPage />} />
-              <Route path="/owner/reports" element={<ReportsPage />} />
-              <Route path="/owner/settings" element={<SettingsPage />} />
+            <Route element={<RequireRole allow={["team_leader"]} />}>
+              <Route element={<LeadLayout />}>
+                <Route path="/lead" element={<LeadOverview />} />
+                <Route
+                  path="/lead/sites"
+                  element={
+                    <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
+                      <SitesPage />
+                    </Suspense>
+                  }
+                />
+                <Route path="/lead/workers" element={<WorkersPage />} />
+                <Route path="/lead/attendance" element={<AttendancePage />} />
+                <Route path="/lead/issues" element={<IssuesPage />} />
+                <Route path="/lead/reports" element={<ReportsPage />} />
+              </Route>
+            </Route>
+
+            <Route element={<RequireRole allow={["owner"]} />}>
+              <Route element={<OwnerLayout />}>
+                <Route path="/owner" element={<OwnerDashboard />} />
+                <Route
+                  path="/owner/sites"
+                  element={
+                    <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
+                      <SitesPage />
+                    </Suspense>
+                  }
+                />
+                <Route path="/owner/workers" element={<WorkersPage />} />
+                <Route path="/owner/assignments" element={<AssignmentsPage />} />
+                <Route path="/owner/tasks" element={<TasksPage />} />
+                <Route path="/owner/checklists" element={<ChecklistsPage />} />
+                <Route path="/owner/attendance" element={<AttendancePage />} />
+                <Route path="/owner/issues" element={<IssuesPage />} />
+                <Route path="/owner/reports" element={<ReportsPage />} />
+                <Route path="/owner/settings" element={<SettingsPage />} />
+              </Route>
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

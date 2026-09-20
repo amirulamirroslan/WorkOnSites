@@ -15,6 +15,7 @@ type AuthValue = {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  profileLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 };
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -40,15 +42,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!session) {
       setProfile(null);
+      setProfileLoading(false);
       return;
     }
-    // profiles.id === auth.users.id, from the Phase 1 migration.
+    setProfileLoading(true);
+    // profiles.id === auth.users.id, from the Phase 1 migration. A null
+    // result here (no matching row) is a real, distinguishable state — see
+    // profileLoading below — not the same as "still fetching."
     supabase
       .from("profiles")
       .select("id, organization_id, role, full_name")
       .eq("id", session.user.id)
       .single()
-      .then(({ data }) => setProfile(data as Profile | null));
+      .then(({ data }) => {
+        setProfile(data as Profile | null);
+        setProfileLoading(false);
+      });
   }, [session]);
 
   async function signIn(emailOrUsername: string, password: string) {
@@ -67,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, profile, loading, profileLoading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

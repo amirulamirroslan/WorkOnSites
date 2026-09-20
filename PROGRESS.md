@@ -30,6 +30,19 @@ to reflect where things stand now, so it doesn't just grow forever.
   `task-photos` bucket) all persist for real
 - **Reports**: Daily/Weekly/Monthly toggle computed from live attendance +
   task data, plus CSV export of the period's attendance records
+- **Route protection**: `/worker`, `/lead`, `/owner` had zero auth/role
+  guarding — any URL was directly reachable regardless of login state, which
+  also meant signing out cleared the session but nothing redirected you away
+  from the page you were already on. Added `RequireRole` wrapping every
+  protected route group
+- **Report Issue**: "Submit Report" didn't write anything — it just
+  navigated back pretending to succeed. Now does a real insert into `issues`
+- **Diagnosability**: a signed-in user with no matching `profiles` row (e.g.
+  an orphaned auth account from a registration that failed partway) used to
+  silently show blank names / "No site assigned" everywhere with no
+  explanation. `AuthContext` now exposes `profileLoading` distinctly from
+  session loading, and Worker Home shows a clear "Account not set up"
+  message instead
 - **Team-leader/worker scoping**: `profiles` and `attendance_events` used to
   be readable org-wide by anyone — any worker or team leader could see every
   other worker's profile and attendance data. Now scoped: owner sees
@@ -40,6 +53,16 @@ to reflect where things stand now, so it doesn't just grow forever.
   owner/team leader on the Attendance page — sets the schema's `override_by`
   column, which existed from the start but had no UPDATE policy or UI at
   all before. A reviewed exception shows "Reviewed" next to it
+
+## Visual polish
+- Real icon set (`lucide-react`) replacing plain text/unicode glyphs — bottom
+  nav (Home/Tasks/Report/Profile) and the owner/lead sidebar had no real
+  icons before (⌂ ☑ ! ● placeholders, or nothing at all on the sidebar)
+- Card depth (shadow + subtle border) on Worker Home, Tasks list, Task
+  Checklist, and Profile — was flat with no elevation before
+- Task Checklist now shows a real progress bar (items done / total) and a
+  custom checkbox style matching the app's rounded aesthetic instead of the
+  browser's default checkbox
 
 ## Still mock data (`src/lib/mockData.ts`) — flagged, not yet touched
 - Issues page (`issuesList`)
