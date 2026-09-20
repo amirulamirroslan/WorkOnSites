@@ -58,7 +58,7 @@ export default function ReportIssue() {
   }
 
   return (
-    <MobileScreen header={<ScreenTitle title="Report Issue" />}>
+    <MobileScreen wide header={<ScreenTitle title="Report Issue" />}>
       <p className="font-display font-semibold mb-3">What's the problem?</p>
       <div className="grid grid-cols-2 gap-2.5 mb-6">
         {categories.map((c) => (

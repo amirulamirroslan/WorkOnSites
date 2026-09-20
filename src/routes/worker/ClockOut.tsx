@@ -4,7 +4,7 @@ import SuccessBadge from "../../components/SuccessBadge";
 import MobileScreen, { DarkScreen, ScreenTitle } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
-import { getCurrentPosition, recordAttendanceEvent } from "../../lib/attendance";
+import { recordAttendanceEvent } from "../../lib/attendance";
 
 export function ClockOutConfirm() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function ClockOutConfirm() {
         <div className="flex justify-between"><span className="text-ink-900/60">Clocked in</span><span className="font-semibold">{clockInTime ?? "—"}</span></div>
       </div>
 
-      <button className="action-band" onClick={() => navigate("/worker/clock-out/success")}>
+      <button className="action-band" onClick={() => navigate("/worker/clock-out/face")}>
         Clock Out
       </button>
     </MobileScreen>
@@ -33,29 +33,29 @@ export function ClockOutConfirm() {
 export function ClockOutSuccess() {
   const navigate = useNavigate();
   const { profile } = useAuth();
-  const { pendingClockIn, setClockStatus, clockInTime } = useAppState();
+  const { pendingClockIn, pendingClockOut, setClockStatus, clockInTime } = useAppState();
   const [status, setStatus] = useState<"saving" | "recorded" | "queued_offline" | "error">("saving");
   const [time] = useState(() => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
 
   useEffect(() => {
     async function run() {
       // Clock-out reuses the site captured at clock-in (same shift, same
-      // site) — only the position needs re-checking, since GPS can move.
-      if (!profile || !pendingClockIn) {
+      // site); position and photo come from the clock-out face-capture step
+      // that just ran, so they're not re-fetched here.
+      if (!profile || !pendingClockIn || !pendingClockOut || pendingClockOut.latitude == null || pendingClockOut.longitude == null) {
         setStatus("error");
         return;
       }
       try {
-        const pos = await getCurrentPosition();
         const result = await recordAttendanceEvent({
           organizationId: profile.organization_id,
           workerId: profile.id,
           site: pendingClockIn.site,
           eventType: "clock_out",
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy ?? null,
-          photoBlob: null,
+          latitude: pendingClockOut.latitude,
+          longitude: pendingClockOut.longitude,
+          accuracy: pendingClockOut.accuracy,
+          photoBlob: pendingClockOut.photoBlob,
         });
         setStatus(result.status);
       } catch {
@@ -73,6 +73,15 @@ export function ClockOutSuccess() {
         <h1 className="display text-xl font-bold mb-1 rise" style={{ animationDelay: "350ms" }}>Clocked Out!</h1>
         <p className="font-display text-3xl font-bold mb-2 rise" style={{ animationDelay: "450ms" }}>{time}</p>
         <p className="text-ink-900/50 text-sm rise" style={{ animationDelay: "550ms" }}>Clocked in at {clockInTime ?? "—"}</p>
+
+        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 mt-4 text-sm text-left rise" style={{ animationDelay: "600ms" }}>
+          <div className="flex items-center justify-between">
+            <span className="text-ink-900/70">Photo captured</span>
+            <span className={pendingClockOut?.photoBlob ? "text-success-600 font-semibold" : "text-ink-900/40"}>
+              {pendingClockOut?.photoBlob ? "✓" : "Skipped"}
+            </span>
+          </div>
+        </div>
 
         {status === "queued_offline" && (
           <p className="text-warning-500 text-xs mt-4">

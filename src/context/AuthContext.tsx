@@ -9,6 +9,7 @@ type Profile = {
   organization_id: string;
   role: Role;
   full_name: string;
+  pdpa_accepted_at: string | null;
 };
 
 type AuthValue = {
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // profileLoading below — not the same as "still fetching."
     supabase
       .from("profiles")
-      .select("id, organization_id, role, full_name")
+      .select("id, organization_id, role, full_name, pdpa_accepted_at")
       .eq("id", session.user.id)
       .single()
       .then(({ data }) => {

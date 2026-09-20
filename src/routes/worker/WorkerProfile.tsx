@@ -12,6 +12,7 @@ export default function WorkerProfile() {
 
   return (
     <MobileScreen
+      wide
       header={
         <div className="flex items-center gap-4">
           <Avatar name={name} size={60} />

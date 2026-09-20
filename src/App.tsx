@@ -20,6 +20,7 @@ import ClockInSuccess from "./routes/worker/ClockInSuccess";
 import TaskList from "./routes/worker/TaskList";
 import TaskChecklist from "./routes/worker/TaskChecklist";
 import { ClockOutConfirm, ClockOutSuccess } from "./routes/worker/ClockOut";
+import ClockOutFace from "./routes/worker/ClockOutFace";
 import ReportIssue from "./routes/worker/ReportIssue";
 import WorkerProfile from "./routes/worker/WorkerProfile";
 
@@ -99,6 +100,7 @@ export default function App() {
               <Route path="/worker/clock-in/face" element={<ClockInFace />} />
               <Route path="/worker/clock-in/success" element={<ClockInSuccess />} />
               <Route path="/worker/clock-out" element={<ClockOutConfirm />} />
+              <Route path="/worker/clock-out/face" element={<ClockOutFace />} />
               <Route path="/worker/clock-out/success" element={<ClockOutSuccess />} />
             </Route>
 

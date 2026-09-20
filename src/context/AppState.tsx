@@ -16,6 +16,16 @@ export type PendingClockIn = {
   overrideReason: string | null;
 };
 
+// Captured on the clock-out photo screen — GPS is re-checked at clock-out
+// (same site as clock-in, but position can move), so it travels alongside
+// the photo rather than being re-fetched a second time at the summary step.
+export type PendingClockOut = {
+  photoBlob: Blob | null;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy: number | null;
+};
+
 type AppStateValue = {
   // The worker's assigned site, fetched once and shared by every screen
   // (previously each tab re-fetched it on every visit).
@@ -31,6 +41,8 @@ type AppStateValue = {
   setClockInTime: (t: string | null) => void;
   pendingClockIn: PendingClockIn | null;
   setPendingClockIn: (p: PendingClockIn | null) => void;
+  pendingClockOut: PendingClockOut | null;
+  setPendingClockOut: (p: PendingClockOut | null) => void;
 };
 
 const AppStateContext = createContext<AppStateValue | null>(null);
@@ -47,6 +59,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [clockStatus, setClockStatus] = useState<ClockStatus>("clocked_out");
   const [clockInTime, setClockInTime] = useState<string | null>(null);
   const [pendingClockIn, setPendingClockIn] = useState<PendingClockIn | null>(null);
+  const [pendingClockOut, setPendingClockOut] = useState<PendingClockOut | null>(null);
 
   const refreshTasks = useCallback(async () => {
     if (!userId) {
@@ -127,8 +140,21 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setClockInTime,
       pendingClockIn,
       setPendingClockIn,
+      pendingClockOut,
+      setPendingClockOut,
     }),
-    [site, tasks, tasksLoading, refreshTasks, setTaskChecklistItem, completeTask, clockStatus, clockInTime, pendingClockIn]
+    [
+      site,
+      tasks,
+      tasksLoading,
+      refreshTasks,
+      setTaskChecklistItem,
+      completeTask,
+      clockStatus,
+      clockInTime,
+      pendingClockIn,
+      pendingClockOut,
+    ]
   );
 
   return (

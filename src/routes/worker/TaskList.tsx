@@ -27,6 +27,7 @@ export default function TaskList() {
 
   return (
     <MobileScreen
+      wide
       header={
         <div>
           <ScreenTitle title="Checklist" />
