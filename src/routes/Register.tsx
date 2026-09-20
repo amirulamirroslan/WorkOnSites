@@ -41,16 +41,18 @@ export default function Register() {
       return;
     }
 
-    // 2) Create the organization.
-    const { data: org, error: orgErr } = await supabase
-      .from("organizations")
-      .insert({ name: orgName })
-      .select("id")
-      .single();
+    // 2) Create the organization. Generate the id client-side and insert it
+    // explicitly — chaining .select() here would read the row back under
+    // RLS immediately after insert, and at this exact moment the user has
+    // no profile yet, so current_org_id() is null and that read-back would
+    // fail RLS, which Supabase reports as if the INSERT itself violated the
+    // policy (it didn't — only the follow-up read would have).
+    const orgId = crypto.randomUUID();
+    const { error: orgErr } = await supabase.from("organizations").insert({ id: orgId, name: orgName });
 
-    if (orgErr || !org) {
+    if (orgErr) {
       setSubmitting(false);
-      setError(orgErr?.message ?? "Could not create organization");
+      setError(orgErr.message);
       return;
     }
 
@@ -58,7 +60,7 @@ export default function Register() {
     //    this brand-new org has no profiles yet).
     const { error: profileErr } = await supabase.from("profiles").insert({
       id: signUpData.user.id,
-      organization_id: org.id,
+      organization_id: orgId,
       role: "owner",
       full_name: fullName,
     });

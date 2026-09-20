@@ -4,6 +4,15 @@ This file tracks current state, not a session-by-session log — it's rewritten
 to reflect where things stand now, so it doesn't just grow forever.
 
 ## Real (backed by Supabase, not mock data)
+- **Bug fixed**: owner registration was hitting "new row violates row-level
+  security policy for table organizations" on every attempt, despite the
+  INSERT policy being correct all along. Root cause: `Register.tsx` chained
+  `.insert().select().single()` on the `organizations` insert — the
+  read-back after insert is itself governed by the SELECT policy, which
+  checks the user's own org via their profile; at that exact moment they
+  have no profile yet, so the read-back failed RLS and Supabase reported it
+  as the insert itself being blocked. Fixed by generating the org id
+  client-side and inserting it explicitly, with no read-back needed at all
 - **Auth & accounts**: owner self-registration (`/register`, creates org +
   owner profile), `create-team-member` Edge Function for owner-added
   team leaders/workers (synthetic `username@workonsite.internal` email +
