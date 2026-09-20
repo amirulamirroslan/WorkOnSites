@@ -49,6 +49,18 @@ export default {
         xl2: "28px",
         pill: "999px",
       },
+      // `screen` (used by h-screen / min-h-screen everywhere) is 100vh by
+      // default, which is the *static* viewport height on phones — it
+      // doesn't track the browser chrome (address bar) hiding/showing or
+      // the window resizing (e.g. Android split-screen). Using the dynamic
+      // viewport unit here keeps every screen sized to what's actually
+      // visible instead of leaving a gap or clipping content after a resize.
+      height: {
+        screen: "100dvh",
+      },
+      minHeight: {
+        screen: "100dvh",
+      },
     },
   },
   plugins: [],
