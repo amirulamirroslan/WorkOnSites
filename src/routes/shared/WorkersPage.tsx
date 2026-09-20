@@ -3,6 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { KeyRound } from "lucide-react";
 import { Avatar } from "../../components/MobileScreen";
+import { ListSkeleton } from "../../components/Loading";
 
 type Member = {
   id: string;
@@ -64,7 +65,7 @@ export default function WorkersPage() {
       </div>
 
       <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
-        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
+        {loading && <ListSkeleton />}
         {!loading && members.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No team members yet.</p>
         )}

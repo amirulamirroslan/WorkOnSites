@@ -26,12 +26,12 @@ export default function MobileScreen({
   if (navSpace) {
     return (
       <div className="min-h-screen bg-navy-950 lg:bg-cloud-50">
-        <div className="mobile-bg lg:bg-none text-white min-h-screen flex flex-col md:max-w-2xl md:mx-auto lg:max-w-6xl lg:min-h-0 lg:px-8 lg:pt-8 lg:pb-10">
+        <div className={`mobile-bg lg:bg-none text-white min-h-screen flex flex-col md:max-w-2xl md:mx-auto ${
+            wide ? "lg:max-w-6xl" : "lg:max-w-3xl"
+          } lg:min-h-0 lg:px-8 lg:pt-8 lg:pb-10`}>
           <div className="px-5 pt-10 pb-7 lg:mobile-bg lg:rounded-2xl lg:px-8 lg:py-8 lg:shadow-soft">{header}</div>
           <div
-            className={`flex-1 bg-cloud-50 text-ink-900 rounded-t-xl2 px-5 pt-6 pb-28 lg:flex-none lg:bg-transparent lg:rounded-none lg:px-0 lg:pt-6 lg:pb-0 ${
-              wide ? "" : "lg:max-w-3xl"
-            } ${sheetClassName}`}
+            className={`flex-1 bg-cloud-50 text-ink-900 rounded-t-xl2 px-5 pt-6 pb-28 lg:flex-none lg:bg-transparent lg:rounded-none lg:px-0 lg:pt-6 lg:pb-0 ${sheetClassName}`}
           >
             {children}
           </div>
@@ -53,7 +53,7 @@ function StandaloneFrame({ children, className = "" }: { children: ReactNode; cl
   return (
     <div className="bg-navy-950 md:mobile-bg min-h-screen md:flex md:items-center md:justify-center md:py-8">
       <div
-        className={`mobile-bg text-white min-h-screen flex flex-col w-full md:max-w-xl md:min-h-[640px] md:rounded-3xl md:overflow-hidden md:shadow-2xl md:border md:border-white/10 ${className}`}
+        className={`page-enter mobile-bg text-white min-h-screen flex flex-col w-full md:max-w-xl md:min-h-[640px] md:rounded-3xl md:overflow-hidden md:shadow-2xl md:border md:border-white/10 ${className}`}
       >
         {children}
       </div>

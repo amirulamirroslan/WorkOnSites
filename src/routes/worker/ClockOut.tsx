@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Check } from "lucide-react";
+import SuccessBadge from "../../components/SuccessBadge";
 import MobileScreen, { DarkScreen, ScreenTitle } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
@@ -69,12 +69,10 @@ export function ClockOutSuccess() {
   return (
     <DarkScreen className="px-5 pt-16 pb-8">
       <div className="card text-ink-900 px-6 pt-10 pb-8 text-center">
-        <div className="w-24 h-24 rounded-full bg-success-500 mx-auto flex items-center justify-center shadow-[0_10px_30px_rgba(34,197,94,0.4)] mb-6">
-          <Check size={48} color="white" strokeWidth={3.5} />
-        </div>
-        <h1 className="display text-xl font-bold mb-1">Clocked Out!</h1>
-        <p className="font-display text-3xl font-bold mb-2">{time}</p>
-        <p className="text-ink-900/50 text-sm">Clocked in at {clockInTime ?? "—"}</p>
+        <SuccessBadge />
+        <h1 className="display text-xl font-bold mb-1 rise" style={{ animationDelay: "350ms" }}>Clocked Out!</h1>
+        <p className="font-display text-3xl font-bold mb-2 rise" style={{ animationDelay: "450ms" }}>{time}</p>
+        <p className="text-ink-900/50 text-sm rise" style={{ animationDelay: "550ms" }}>Clocked in at {clockInTime ?? "—"}</p>
 
         {status === "queued_offline" && (
           <p className="text-warning-500 text-xs mt-4">

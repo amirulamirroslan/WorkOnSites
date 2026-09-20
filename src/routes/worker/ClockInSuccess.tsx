@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Check, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import SuccessBadge from "../../components/SuccessBadge";
 import { DarkScreen } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
@@ -43,16 +44,14 @@ export default function ClockInSuccess() {
   return (
     <DarkScreen className="px-5 pt-16 pb-8">
       <div className="card text-ink-900 px-6 pt-10 pb-7 text-center">
-        <div className="w-24 h-24 rounded-full bg-success-500 mx-auto flex items-center justify-center shadow-[0_10px_30px_rgba(34,197,94,0.4)] mb-6">
-          <Check size={48} color="white" strokeWidth={3.5} />
-        </div>
-        <h1 className="display text-xl font-bold mb-1">Clocked In!</h1>
-        <p className="font-display text-3xl font-bold text-ink-900 mb-2">{time}</p>
-        <p className="inline-flex items-center gap-1 text-brand text-sm font-semibold mb-6">
+        <SuccessBadge />
+        <h1 className="display text-xl font-bold mb-1 rise" style={{ animationDelay: "350ms" }}>Clocked In!</h1>
+        <p className="font-display text-3xl font-bold text-ink-900 mb-2 rise" style={{ animationDelay: "450ms" }}>{time}</p>
+        <p className="inline-flex items-center gap-1 text-brand text-sm font-semibold mb-6 rise" style={{ animationDelay: "550ms" }}>
           <MapPin size={14} /> {pendingClockIn?.site.name}
         </p>
 
-        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 space-y-3 text-sm text-left">
+        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 space-y-3 text-sm text-left rise" style={{ animationDelay: "650ms" }}>
           <div className="flex items-center justify-between">
             <span className="text-ink-900/70">Location verified</span>
             <span className="text-success-600 font-semibold">✓</span>

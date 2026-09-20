@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { ListSkeleton } from "../../components/Loading";
 
 type EventRow = {
   id: string;
@@ -104,7 +105,7 @@ export default function AttendancePage() {
     <div>
       <h1 className="font-display text-xl font-semibold mb-6">Attendance</h1>
       <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
-        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
+        {loading && <ListSkeleton />}
         {!loading && shifts.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No attendance recorded yet.</p>}
         {shifts.map((a) => (
           <div key={a.eventId} className="list-row px-4">

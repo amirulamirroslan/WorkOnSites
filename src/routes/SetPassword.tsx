@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import AuthShell from "../components/AuthShell";
+import AnimatedLogo from "../components/AnimatedLogo";
 
 // One page, two situations:
 //  - "recovery": an owner followed the emailed reset link (/reset-password).
@@ -71,7 +72,7 @@ export default function SetPassword({ mode }: { mode: "recovery" | "forced" }) {
   return (
     <AuthShell skyline="none" panel>
       <div className="flex flex-col items-center text-center mb-8 mt-4">
-        <img src="/logo.png" alt="" width={56} height={56} className="rounded-2xl shadow-glow mb-3" aria-hidden />
+        <AnimatedLogo size={56} className="mb-3" />
         <h1 className="display text-xl font-semibold">
           {mode === "forced" ? "Choose a new password" : "Set a new password"}
         </h1>

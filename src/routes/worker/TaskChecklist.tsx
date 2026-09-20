@@ -4,6 +4,7 @@ import { Camera, Check } from "lucide-react";
 import MobileScreen, { ScreenTitle } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
+import { Spinner } from "../../components/Loading";
 import { fetchTaskPhotos, uploadTaskPhoto, type TaskPhoto } from "../../lib/tasks";
 
 export default function TaskChecklist() {
@@ -53,7 +54,7 @@ export default function TaskChecklist() {
             <span>{checklistPercent}%</span>
           </div>
           <div className="h-2 rounded-pill bg-white/15">
-            <div className="h-2 rounded-pill bg-brand-light transition-all" style={{ width: `${checklistPercent}%` }} />
+            <div className="h-2 rounded-pill bg-brand-light transition-[width] duration-500 ease-out" style={{ width: `${checklistPercent}%` }} />
           </div>
         </div>
       }
@@ -61,13 +62,21 @@ export default function TaskChecklist() {
       <p className="font-display font-semibold mb-3">Checklist</p>
       <div className="card divide-y divide-cloud-100 mb-6">
         {task.checklist.map((item) => (
-          <label key={item.id} className="flex items-center gap-3 px-4 py-3.5">
+          <label key={item.id} className="press-row flex items-center gap-3 px-4 py-3.5">
             <span
               className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
                 item.isCompleted ? "bg-brand border-brand" : "border-ink-900/20"
               }`}
             >
-              {item.isCompleted && <Check size={14} color="white" strokeWidth={3} />}
+              {/* Always rendered and scaled (a transition, so it never plays on first load) */}
+              <Check
+                size={14}
+                color="white"
+                strokeWidth={3}
+                className={`transition-transform duration-200 ease-[cubic-bezier(0.34,1.45,0.5,1)] ${
+                  item.isCompleted ? "scale-100" : "scale-0"
+                }`}
+              />
               <input
                 type="checkbox"
                 checked={item.isCompleted}
@@ -99,7 +108,7 @@ export default function TaskChecklist() {
           className="aspect-square rounded-xl border-2 border-dashed border-brand/40 bg-brand-50 flex flex-col items-center justify-center gap-1 text-brand text-[11px] font-semibold disabled:opacity-40"
         >
           {uploading ? (
-            <span className="text-xs">…</span>
+            <Spinner size={20} />
           ) : (
             <>
               <Camera size={20} strokeWidth={1.8} />

@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { LoadingScreen } from "../components/Loading";
 
 // Sends a signed-in user to their role's home. An unauthenticated visitor
 // sees the splash screen first — /login stays directly reachable (e.g. the
@@ -7,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 export default function RoleRedirect() {
   const { session, profile, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading) return <LoadingScreen />;
   if (!session) return <Navigate to="/splash" replace />;
   if (session.user.user_metadata?.must_change_password) return <Navigate to="/set-password" replace />;
 

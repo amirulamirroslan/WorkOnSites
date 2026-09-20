@@ -5,6 +5,7 @@ import MobileScreen, { ScreenTitle, StepTracker } from "../../components/MobileS
 import { useAuth } from "../../context/AuthContext";
 import { useAppState } from "../../context/AppState";
 import { getMyAssignedSites, getCurrentPosition, distanceMeters, type AssignedSite } from "../../lib/attendance";
+import { Spinner } from "../../components/Loading";
 
 const SiteMap = lazy(() => import("../../components/SiteMap"));
 
@@ -147,7 +148,13 @@ export default function ClockInLocation() {
 
       <div className="card overflow-hidden mt-3 h-48 relative bg-brand-50">
         {site && (
-          <Suspense fallback={<div className="h-full flex items-center justify-center text-ink-900/40 text-sm">Loading map…</div>}>
+          <Suspense
+            fallback={
+              <div className="h-full flex items-center justify-center text-brand">
+                <Spinner size={22} />
+              </div>
+            }
+          >
             <SiteMap
               latitude={site.latitude}
               longitude={site.longitude}

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Avatar } from "./MobileScreen";
+import { useAnimatedNumber } from "../lib/useAnimatedNumber";
 
 export function greeting() {
   const h = new Date().getHours();
@@ -19,18 +20,36 @@ const tones = {
   danger: "bg-danger-500/10 text-danger-500",
 };
 
+// Counts the number inside a value like "94%" or "12" up from 0, keeping any
+// prefix/suffix. Anything it can't parse (e.g. "1,240") is shown as-is.
+function AnimatedValue({ value, delay }: { value: string; delay: number }) {
+  const m = value.match(/^(\D*?)(\d+(?:\.\d+)?)(\D*)$/);
+  const shown = useAnimatedNumber(m ? parseFloat(m[2]) : 0, { delay });
+  if (!m) return <>{value}</>;
+  const decimals = m[2].includes(".") ? m[2].split(".")[1].length : 0;
+  return (
+    <>
+      {m[1]}
+      {shown.toFixed(decimals)}
+      {m[3]}
+    </>
+  );
+}
+
 export function StatCard({
   label,
   value,
   Icon,
   tone = "brand",
   sub,
+  delay = 0,
 }: {
   label: string;
   value: string;
   Icon?: LucideIcon;
   tone?: keyof typeof tones;
   sub?: string;
+  delay?: number;
 }) {
   return (
     <div className="card p-3.5 sm:p-5 flex items-center gap-3 sm:gap-4">
@@ -40,7 +59,9 @@ export function StatCard({
         </span>
       )}
       <div>
-        <p className="font-display text-xl font-bold leading-none">{value}</p>
+        <p className="font-display text-xl font-bold leading-none">
+          <AnimatedValue value={value} delay={delay} />
+        </p>
         <p className="text-xs text-ink-900/50 mt-1.5">{label}</p>
         {sub && <p className="text-[11px] text-ink-900/40">{sub}</p>}
       </div>
@@ -57,16 +78,18 @@ export function Panel({ title, children, className = "" }: { title: string; chil
   );
 }
 
-export function BarRow({ label, percent }: { label: string; percent: number }) {
+export function BarRow({ label, percent, delay = 0 }: { label: string; percent: number; delay?: number }) {
   const color = percent >= 90 ? "bg-success-500" : "bg-brand";
+  // Bar and number share one eased value so they fill together.
+  const shown = useAnimatedNumber(percent, { duration: 900, delay });
   return (
     <div>
       <div className="flex justify-between text-xs mb-1.5">
         <span className="text-ink-900/70 font-medium">{label}</span>
-        <span className="text-ink-900/50 font-semibold">{percent}%</span>
+        <span className="text-ink-900/50 font-semibold">{Math.round(shown)}%</span>
       </div>
       <div className="h-2 rounded-pill bg-cloud-100">
-        <div className={`h-2 rounded-pill ${color}`} style={{ width: `${percent}%` }} />
+        <div className={`h-2 rounded-pill ${color}`} style={{ width: `${shown}%` }} />
       </div>
     </div>
   );

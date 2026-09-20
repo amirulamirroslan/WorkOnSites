@@ -7,11 +7,12 @@ import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 import { TaskStatusIcon, statusColor, statusLabel } from "./WorkerHome";
+import { TaskRowsSkeleton } from "../../components/Loading";
 
 type Filter = "all" | "completed" | "pending";
 
 export default function TaskList() {
-  const { tasks } = useAppState();
+  const { tasks, tasksLoading } = useAppState();
   const { profile } = useAuth();
   const [site, setSite] = useState<AssignedSite | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
@@ -59,7 +60,7 @@ export default function TaskList() {
           <button
             key={t.id}
             onClick={() => setFilter(t.id)}
-            className={`text-xs font-semibold px-3.5 py-2 rounded-pill transition-colors ${
+            className={`press text-xs font-semibold px-3.5 py-2 rounded-pill transition-colors ${
               filter === t.id ? "bg-brand text-white shadow-glow" : "bg-white text-ink-900/60 border border-cloud-100"
             }`}
           >
@@ -68,14 +69,21 @@ export default function TaskList() {
         ))}
       </div>
 
-      {visible.length === 0 && <p className="text-ink-900/40 text-sm py-6 text-center">No tasks here.</p>}
+      {tasksLoading && tasks.length === 0 && (
+        <div className="card divide-y divide-cloud-100">
+          <TaskRowsSkeleton />
+        </div>
+      )}
+      {!tasksLoading && visible.length === 0 && (
+        <p className="text-ink-900/40 text-sm py-6 text-center">No tasks here.</p>
+      )}
       {visible.length > 0 && (
         <div className="card divide-y divide-cloud-100">
           {visible.map((task) => (
             <Link
               key={task.id}
               to={task.checklist.length ? `/worker/tasks/${task.id}` : "#"}
-              className="flex items-center gap-3 px-4 py-3.5"
+              className="press-row flex items-center gap-3 px-4 py-3.5"
             >
               <TaskStatusIcon status={task.status} />
               <div className="flex-1 min-w-0">

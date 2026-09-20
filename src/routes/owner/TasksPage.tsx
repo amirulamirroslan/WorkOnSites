@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { ListSkeleton } from "../../components/Loading";
 
 type Task = {
   id: string;
@@ -52,7 +53,7 @@ export default function TasksPage() {
       </div>
 
       <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
-        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
+        {loading && <ListSkeleton />}
         {!loading && tasks.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No tasks yet.</p>}
         {tasks.map((t) => (
           <div key={t.id} className="list-row px-4">

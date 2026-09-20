@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthShell, { Wordmark } from "../components/AuthShell";
+import AnimatedLogo from "../components/AnimatedLogo";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function Login() {
   return (
     <AuthShell skyline="bottom" panel>
       <div className="flex flex-col items-center text-center mt-6">
-        <img src="/logo.png" alt="" width={64} height={64} className="rounded-2xl shadow-glow mb-4" aria-hidden />
+        <AnimatedLogo size={64} className="mb-4" />
         <Wordmark size="text-xl" />
         <p className="text-white/70 text-sm mt-1">Welcome back — sign in to continue</p>
       </div>

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import MobileScreen, { ScreenTitle } from "../../components/MobileScreen";
+import { Spinner } from "../../components/Loading";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 
 const categories = [
@@ -21,13 +22,18 @@ export default function ReportIssue() {
   const [site, setSite] = useState<AssignedSite | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+  const leaveTimer = useRef<number>();
 
   useEffect(() => {
     if (profile) getMyAssignedSite(profile.id).then(setSite);
   }, [profile]);
 
+  // Don't bounce the user back if they navigate away during the success beat.
+  useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
+
   async function handleSubmit() {
-    if (!profile || !category || !description) return;
+    if (submitting || sent || !profile || !category || !description) return;
     setSubmitting(true);
     setError(null);
 
@@ -50,7 +56,9 @@ export default function ReportIssue() {
       setError(insertErr.message);
       return;
     }
-    navigate(-1);
+    // Show the confirmation for a beat, then go back.
+    setSent(true);
+    leaveTimer.current = window.setTimeout(() => navigate(-1), 1100);
   }
 
   return (
@@ -61,7 +69,7 @@ export default function ReportIssue() {
           <button
             key={c.id}
             onClick={() => setCategory(c.id)}
-            className={`rounded-2xl px-3 py-4 text-sm font-medium text-center border transition-colors ${
+            className={`press rounded-2xl px-3 py-4 text-sm font-medium text-center border transition-colors ${
               category === c.id
                 ? "bg-brand text-white border-brand shadow-glow"
                 : "bg-white text-ink-900/70 border-cloud-100 shadow-soft"
@@ -84,11 +92,37 @@ export default function ReportIssue() {
       {error && <p className="text-danger-500 text-xs mb-4">{error}</p>}
 
       <button
-        className="action-band disabled:opacity-40 disabled:shadow-none"
-        disabled={!category || !description || submitting}
+        className={`action-band transition-all duration-300 disabled:opacity-40 disabled:shadow-none ${
+          sent ? "!bg-success-500 !shadow-[0_10px_30px_rgba(34,197,94,0.4)]" : ""
+        }`}
+        disabled={!category || !description}
+        aria-busy={submitting}
         onClick={handleSubmit}
       >
-        {submitting ? "Submitting…" : "Submit Report"}
+        {sent ? (
+          <span className="inline-flex items-center justify-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path
+                className="check-draw"
+                style={{ animationDelay: "0ms" }}
+                d="M5 12.5l4.5 4.5L19 7.5"
+                pathLength={1}
+                stroke="white"
+                strokeWidth="3.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Report sent
+          </span>
+        ) : submitting ? (
+          <span className="inline-flex items-center justify-center gap-2">
+            <Spinner size={18} />
+            Submitting…
+          </span>
+        ) : (
+          "Submit Report"
+        )}
       </button>
     </MobileScreen>
   );

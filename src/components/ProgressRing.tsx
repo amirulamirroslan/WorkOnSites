@@ -1,7 +1,10 @@
+import { useAnimatedNumber } from "../lib/useAnimatedNumber";
+
 export default function ProgressRing({ percent, size = 96 }: { percent: number; size?: number }) {
   const radius = 46;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percent / 100) * circumference;
+  const shown = useAnimatedNumber(percent);
+  const offset = circumference - (shown / 100) * circumference;
 
   return (
     <svg width={size} height={size} viewBox="0 0 120 120" className="shrink-0">
@@ -17,10 +20,9 @@ export default function ProgressRing({ percent, size = 96 }: { percent: number; 
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         transform="rotate(-90 60 60)"
-        style={{ transition: "stroke-dashoffset 0.6s ease" }}
       />
       <text x="60" y="68" textAnchor="middle" fill="#0B1B3A" style={{ fontWeight: 700, fontSize: 26 }}>
-        {percent}%
+        {Math.round(shown)}%
       </text>
     </svg>
   );

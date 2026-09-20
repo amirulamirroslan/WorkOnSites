@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import AuthShell, { Wordmark } from "../components/AuthShell";
+import AnimatedLogo from "../components/AnimatedLogo";
 
 export default function Splash() {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ export default function Splash() {
   return (
     <AuthShell>
       <div className="flex flex-col items-center text-center mt-10 md:mt-0">
-        <img src="/logo.png" alt="" width={84} height={84} className="rounded-3xl shadow-glow mb-6" aria-hidden />
+        <AnimatedLogo size={84} className="mb-6" />
         <Wordmark size="text-3xl md:text-2xl" />
         <p className="text-white/70 text-sm mt-2">Safer Sites. Better Work.</p>
       </div>

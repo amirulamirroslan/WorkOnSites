@@ -6,6 +6,7 @@ import MobileScreen, { Avatar, SitePill } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
+import { TaskRowsSkeleton } from "../../components/Loading";
 
 export function TaskStatusIcon({ status }: { status: "pending" | "in_progress" | "completed" | "blocked" }) {
   if (status === "completed") {
@@ -56,7 +57,7 @@ function greeting() {
 export default function WorkerHome() {
   const navigate = useNavigate();
   const { profile, profileLoading } = useAuth();
-  const { tasks, clockStatus, clockInTime } = useAppState();
+  const { tasks, tasksLoading, clockStatus, clockInTime } = useAppState();
   const [site, setSite] = useState<AssignedSite | null>(null);
   const completedCount = tasks.filter((t) => t.status === "completed").length;
   const percent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
@@ -103,10 +104,18 @@ export default function WorkerHome() {
         <div className="flex-1">
           <p className="display text-xl font-semibold">{clockedIn ? "Clock Out" : "Clock In"}</p>
           <p className="text-white/80 text-sm mt-0.5">
-            {clockedIn ? `Clocked in at ${clockInTime ?? "—"}` : "Tap to verify location & face"}
+            {clockedIn ? (
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" aria-hidden />
+                Clocked in at {clockInTime ?? "—"}
+              </span>
+            ) : (
+              "Tap to verify location & face"
+            )}
           </p>
         </div>
-        <span className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center">
+        <span className="relative w-11 h-11 rounded-full bg-white/20 flex items-center justify-center">
+          {!clockedIn && <span className="cta-ping" aria-hidden />}
           <ArrowUpRight size={22} />
         </span>
       </button>
@@ -134,12 +143,15 @@ export default function WorkerHome() {
           </button>
         </div>
         <div className="card divide-y divide-cloud-100">
-          {tasks.length === 0 && <p className="text-ink-900/40 text-sm px-4 py-4">No tasks assigned for today.</p>}
+          {tasksLoading && tasks.length === 0 && <TaskRowsSkeleton />}
+          {!tasksLoading && tasks.length === 0 && (
+            <p className="text-ink-900/40 text-sm px-4 py-4">No tasks assigned for today.</p>
+          )}
           {tasks.slice(0, 5).map((task) => (
             <button
               key={task.id}
               onClick={() => navigate(`/worker/tasks/${task.id}`)}
-              className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
+              className="press-row w-full flex items-center gap-3 px-4 py-3.5 text-left"
             >
               <TaskStatusIcon status={task.status} />
               <div className="flex-1 min-w-0">

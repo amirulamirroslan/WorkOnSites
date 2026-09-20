@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import { AppStateProvider } from "./context/AppState";
 import BottomNav from "./components/BottomNav";
 import NavRail from "./components/NavRail";
 import OfflineBanner from "./components/OfflineBanner";
+import { PageLoader } from "./components/Loading";
 import Login from "./routes/Login";
 import Splash from "./routes/Splash";
 import Register from "./routes/Register";
@@ -47,13 +48,16 @@ const workerNav = [
 
 // Phone: bottom tab bar. Laptop: left sidebar (same look as owner/team leader).
 function WorkerLayout() {
+  const { pathname } = useLocation();
   return (
     <div className="lg:flex">
       <div className="hidden lg:block">
         <NavRail items={workerNav} />
       </div>
       <div className="flex-1 min-w-0">
-        <Outlet />
+        <div key={pathname} className="page-enter">
+          <Outlet />
+        </div>
       </div>
       <BottomNav />
     </div>
@@ -99,7 +103,7 @@ export default function App() {
                 <Route
                   path="/lead/sites"
                   element={
-                    <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
+                    <Suspense fallback={<PageLoader label="Loading sites" />}>
                       <SitesPage />
                     </Suspense>
                   }
@@ -117,7 +121,7 @@ export default function App() {
                 <Route
                   path="/owner/sites"
                   element={
-                    <Suspense fallback={<div className="p-8 text-sm text-ink-900/50">Loading…</div>}>
+                    <Suspense fallback={<PageLoader label="Loading sites" />}>
                       <SitesPage />
                     </Suspense>
                   }
