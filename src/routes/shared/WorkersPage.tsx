@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { KeyRound } from "lucide-react";
+import { Avatar } from "../../components/MobileScreen";
 
 type Member = {
   id: string;
@@ -21,7 +23,17 @@ export default function WorkersPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [createdCreds, setCreatedCreds] = useState<{ username: string; tempPassword: string } | null>(null);
+  const [createdCreds, setCreatedCreds] = useState<{ title: string; name?: string; username: string; tempPassword: string } | null>(null);
+  const [resetTarget, setResetTarget] = useState<Member | null>(null);
+
+  // Owner can reset team leaders + workers; a team leader can reset workers
+  // (the list only ever contains people RLS lets them see). Never yourself
+  // or an owner.
+  function canReset(m: Member) {
+    if (!profile || m.id === profile.id || m.role === "owner" || !m.username) return false;
+    if (profile.role === "owner") return true;
+    return profile.role === "team_leader" && m.role === "worker";
+  }
 
   async function loadMembers() {
     setLoading(true);
@@ -58,13 +70,24 @@ export default function WorkersPage() {
         )}
         {members.map((m) => (
           <div key={m.id} className="list-row px-4">
-            <div>
-              <p className="font-medium text-sm">{m.full_name}</p>
-              <p className="text-xs text-ink-900/50">
-                {roleLabel[m.role]}
-                {m.username ? ` · @${m.username}` : ""}
-              </p>
+            <div className="flex items-center gap-3 min-w-0">
+              <Avatar name={m.full_name} size={36} />
+              <div className="min-w-0">
+                <p className="font-medium text-sm truncate">{m.full_name}</p>
+                <p className="text-xs text-ink-900/50">
+                  {roleLabel[m.role]}
+                  {m.username ? ` · @${m.username}` : ""}
+                </p>
+              </div>
             </div>
+            {canReset(m) && (
+              <button
+                onClick={() => setResetTarget(m)}
+                className="flex items-center gap-1.5 text-xs font-medium text-brand bg-brand-50 hover:bg-brand/15 px-3 py-1.5 rounded-lg shrink-0"
+              >
+                <KeyRound size={13} /> Reset password
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -73,9 +96,20 @@ export default function WorkersPage() {
         <AddMemberModal
           onClose={() => setShowAdd(false)}
           onCreated={(creds) => {
-            setCreatedCreds(creds);
+            setCreatedCreds({ title: "Account created", ...creds });
             setShowAdd(false);
             loadMembers();
+          }}
+        />
+      )}
+
+      {resetTarget && (
+        <ResetPasswordModal
+          member={resetTarget}
+          onClose={() => setResetTarget(null)}
+          onReset={(creds) => {
+            setResetTarget(null);
+            setCreatedCreds({ title: "Password reset", name: resetTarget.full_name, ...creds });
           }}
         />
       )}
@@ -83,9 +117,11 @@ export default function WorkersPage() {
       {createdCreds && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
           <div className="bg-white rounded-card p-6 max-w-xs w-full">
-            <h2 className="font-display font-semibold mb-2">Account created</h2>
+            <h2 className="font-display font-semibold mb-2">{createdCreds.title}</h2>
             <p className="text-xs text-ink-900/60 mb-4">
-              Share these sign-in details directly — they aren't emailed or shown again.
+              {createdCreds.name ? `New temporary password for ${createdCreds.name}. ` : ""}
+              Share these sign-in details directly — they aren't emailed or shown again. They'll be asked to choose
+              their own password when they sign in.
             </p>
             <div className="bg-cloud-50 rounded-lg p-3 text-sm mb-4">
               <p>Username: <span className="font-mono">{createdCreds.username}</span></p>
@@ -173,6 +209,54 @@ function AddMemberModal({
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function ResetPasswordModal({
+  member,
+  onClose,
+  onReset,
+}: {
+  member: Member;
+  onClose: () => void;
+  onReset: (creds: { username: string; tempPassword: string }) => void;
+}) {
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleReset() {
+    setError(null);
+    setSubmitting(true);
+    const { data, error: fnError } = await supabase.functions.invoke("reset-team-member-password", {
+      body: { memberId: member.id },
+    });
+    setSubmitting(false);
+    if (fnError || data?.error) {
+      setError(data?.error ?? fnError?.message ?? "Could not reset the password");
+      return;
+    }
+    onReset({ username: data.username, tempPassword: data.tempPassword });
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
+      <div className="bg-white rounded-card p-6 max-w-xs w-full">
+        <h2 className="font-display font-semibold mb-2">Reset password?</h2>
+        <p className="text-xs text-ink-900/60 mb-4">
+          This replaces the current password for <span className="font-semibold">{member.full_name}</span> with a
+          new temporary one for you to give them.
+        </p>
+        {error && <p className="text-danger-500 text-xs mb-3">{error}</p>}
+        <div className="flex gap-2">
+          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-black/10 text-sm">
+            Cancel
+          </button>
+          <button onClick={handleReset} disabled={submitting} className="flex-1 action-band disabled:opacity-40 text-sm !py-2">
+            {submitting ? "Resetting…" : "Reset"}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthShell, { Wordmark } from "../components/AuthShell";
 
@@ -51,7 +51,12 @@ export default function Login() {
           autoComplete="current-password"
         />
         {error && <p className="text-red-300 text-xs">{error}</p>}
-        <button type="submit" disabled={submitting} className="action-band disabled:opacity-40 mt-2">
+        <div className="text-right -mt-1">
+          <Link to="/forgot-password" className="text-brand-light text-xs font-medium">
+            Forgot password?
+          </Link>
+        </div>
+        <button type="submit" disabled={submitting} className="action-band disabled:opacity-40 mt-1">
           {submitting ? "Signing in…" : "Login"}
         </button>
         <p className="text-white/60 text-xs text-center mt-4">

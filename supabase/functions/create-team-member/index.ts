@@ -37,7 +37,8 @@ function randomTempPassword() {
   // 10 random chars from a readable set — shown once to the owner to relay
   // to the new team leader/worker; they are not emailed anywhere.
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  const bytes = crypto.getRandomValues(new Uint8Array(10));
+  return Array.from(bytes, (b) => chars[b % chars.length]).join("");
 }
 
 Deno.serve(async (req) => {
@@ -81,6 +82,8 @@ Deno.serve(async (req) => {
     email: syntheticEmail,
     password: tempPassword,
     email_confirm: true,
+    // Forces the new member to pick their own password on first sign-in.
+    user_metadata: { must_change_password: true },
   });
 
   if (createErr || !created?.user) {

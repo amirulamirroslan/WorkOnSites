@@ -9,6 +9,7 @@ export default function RoleRedirect() {
 
   if (loading) return null;
   if (!session) return <Navigate to="/splash" replace />;
+  if (session.user.user_metadata?.must_change_password) return <Navigate to="/set-password" replace />;
 
   if (profile?.role === "owner") return <Navigate to="/owner" replace />;
   if (profile?.role === "team_leader") return <Navigate to="/lead" replace />;

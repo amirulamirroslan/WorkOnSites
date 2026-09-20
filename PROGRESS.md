@@ -63,6 +63,11 @@ to reflect where things stand now, so it doesn't just grow forever.
   column, which existed from the start but had no UPDATE policy or UI at
   all before. A reviewed exception shows "Reviewed" next to it
 
+## Forgot / reset password
+- **Owners (real email):** `Forgot password?` on Login → `/forgot-password` sends a Supabase reset email → link opens `/reset-password` to set a new password. Needs the site URL + `https://<your-domain>/reset-password` in Supabase → Authentication → URL Configuration → Redirect URLs
+- **Team leaders / workers (username, no real email):** owner (any team leader/worker) or team leader (workers on their sites) taps **Reset password** on the Workers page → `reset-team-member-password` Edge Function generates a temp password shown once to hand over. The account is flagged `must_change_password`, so their next sign-in is forced through `/set-password`. New accounts from `create-team-member` get the same flag
+- Deploy both functions: `npx supabase functions deploy reset-team-member-password` and re-deploy `create-team-member`
+
 ## Visual redesign (matches supplied mockups)
 - Navy-gradient + light "sheet" layout for every worker screen (`components/MobileScreen.tsx`): Splash (Login / Sign Up + skyline), Login, Register, Worker Home (blue Clock In card, progress ring, task list), Checklist (filter tabs), Task detail + Photo Evidence, Clock In (Location w/ live map + Face steps), Clocked In success, Clock Out, Report Issue, Profile
 - Desktop: dark-navy sidebar with logo + user/sign-out, stat-card dashboards for Team Leader and Owner (data still mock, see below)
@@ -85,7 +90,7 @@ to reflect where things stand now, so it doesn't just grow forever.
 - Assignments page
 
 ## Known gaps / possible next steps
-- The `create-team-member` Edge Function needs deploying by the project
+- The `create-team-member` and `reset-team-member-password` Edge Functions need deploying by the project
   owner (`supabase functions deploy create-team-member`) — not something
   doable from this side without their Supabase CLI login
 

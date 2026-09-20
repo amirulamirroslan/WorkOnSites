@@ -11,6 +11,8 @@ export default function RequireRole({ allow }: { allow?: Role[] }) {
 
   if (loading) return null;
   if (!session) return <Navigate to="/splash" replace />;
+  // Signed in with an admin-issued temporary password: must choose their own first.
+  if (session.user.user_metadata?.must_change_password) return <Navigate to="/set-password" replace />;
   if (allow && profile && !allow.includes(profile.role)) return <Navigate to="/" replace />;
 
   return <Outlet />;

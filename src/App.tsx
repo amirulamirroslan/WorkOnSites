@@ -7,6 +7,8 @@ import OfflineBanner from "./components/OfflineBanner";
 import Login from "./routes/Login";
 import Splash from "./routes/Splash";
 import Register from "./routes/Register";
+import ForgotPassword from "./routes/ForgotPassword";
+import SetPassword from "./routes/SetPassword";
 import RoleRedirect from "./routes/RoleRedirect";
 import RequireRole from "./routes/RequireRole";
 import WorkerHome from "./routes/worker/WorkerHome";
@@ -58,6 +60,9 @@ export default function App() {
             <Route path="/splash" element={<Splash />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<SetPassword mode="recovery" />} />
+            <Route path="/set-password" element={<SetPassword mode="forced" />} />
 
             <Route element={<RequireRole allow={["worker"]} />}>
               <Route element={<WorkerLayout />}>

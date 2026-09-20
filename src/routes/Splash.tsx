@@ -19,9 +19,9 @@ export default function Splash() {
         <button className="action-light" onClick={() => navigate("/register")}>
           Sign Up
         </button>
-        <p className="text-white/50 text-xs text-center mt-3">
-          Forgot password? Ask your team leader or owner to reset it.
-        </p>
+        <button className="text-white/60 text-xs text-center mt-3" onClick={() => navigate("/forgot-password")}>
+          Forgot password?
+        </button>
       </div>
     </AuthShell>
   );
