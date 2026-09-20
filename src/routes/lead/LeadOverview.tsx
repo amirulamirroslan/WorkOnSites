@@ -1,6 +1,9 @@
 import { Outlet } from "react-router-dom";
+import { Users, UserCheck, Clock, UserX } from "lucide-react";
 import NavRail from "../../components/NavRail";
-import { liveWorkers } from "../../lib/mockData";
+import { BarRow, DateChip, PersonRow, Panel, StatCard, greeting } from "../../components/DashboardBits";
+import { useAuth } from "../../context/AuthContext";
+import { liveWorkers, sitePerformance } from "../../lib/mockData";
 
 const navItems = [
   { to: "/lead", label: "Overview" },
@@ -15,7 +18,7 @@ export function LeadLayout() {
   return (
     <div className="surface-light flex min-h-screen">
       <NavRail items={navItems} />
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 min-w-0">
         <Outlet />
       </main>
     </div>
@@ -23,45 +26,49 @@ export function LeadLayout() {
 }
 
 export default function LeadOverview() {
+  const { profile } = useAuth();
   const onSite = liveWorkers.filter((w) => w.status === "on_site").length;
   const late = 1; // wire from real attendance vs. scheduled shift start once backend is connected
   const absent = liveWorkers.filter((w) => w.status === "not_clocked_in").length;
+  const first = profile?.full_name?.split(" ")[0] ?? "Team";
 
   return (
     <div>
-      <h1 className="font-display text-xl font-semibold mb-6">Team Overview</h1>
-
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        <Stat label="Total Workers" value={String(liveWorkers.length)} />
-        <Stat label="On Site" value={String(onSite)} />
-        <Stat label="Late" value={String(late)} tone="warning" />
-        <Stat label="Absent" value={String(absent)} tone="danger" />
+      <div className="flex items-start justify-between mb-7">
+        <div>
+          <h1 className="font-display text-xl font-bold">{greeting()}, {first}</h1>
+          <p className="text-sm text-ink-900/50 mt-1">Here's what's happening across your sites today</p>
+        </div>
+        <DateChip />
       </div>
 
-      <p className="text-sm font-medium text-ink-900/60 mb-2">Live Workers</p>
-      <div className="bg-white rounded-card border border-black/5">
-        {liveWorkers.map((w) => (
-          <div key={w.id} className="list-row px-4">
-            <div>
-              <p className="font-medium text-sm">{w.name}</p>
-              <p className="text-xs text-ink-900/50">
-                {w.site} {w.clockedInAt ? `· ${w.clockedInAt}` : "· Not clocked in"}
-              </p>
-            </div>
-            <span className="text-xs text-ink-900/60">{w.tasksDone}/{w.tasksTotal} tasks</span>
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <StatCard label="Total Workers" value={String(liveWorkers.length)} Icon={Users} tone="brand" />
+        <StatCard label="On Site" value={String(onSite)} Icon={UserCheck} tone="success" />
+        <StatCard label="Late" value={String(late)} Icon={Clock} tone="warning" />
+        <StatCard label="Absent" value={String(absent)} Icon={UserX} tone="danger" />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <Panel title="Site Performance">
+          <div className="space-y-4">
+            {sitePerformance.map((s) => (
+              <BarRow key={s.site} label={s.site} percent={s.percent} />
+            ))}
           </div>
-        ))}
+        </Panel>
+        <Panel title="Live Workers">
+          {liveWorkers.map((w) => (
+            <PersonRow
+              key={w.id}
+              name={w.name}
+              online={w.status === "on_site"}
+              sub={`${w.site} ${w.clockedInAt ? `· ${w.clockedInAt}` : "· Not clocked in"}`}
+              right={`${w.tasksDone}/${w.tasksTotal} tasks`}
+            />
+          ))}
+        </Panel>
       </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, tone }: { label: string; value: string; tone?: "warning" | "danger" }) {
-  const color = tone === "warning" ? "text-warning-500" : tone === "danger" ? "text-danger-500" : "text-ink-900";
-  return (
-    <div className="bg-white rounded-card border border-black/5 p-4">
-      <p className={`font-display text-xl font-bold ${color}`}>{value}</p>
-      <p className="text-xs text-ink-900/50">{label}</p>
     </div>
   );
 }

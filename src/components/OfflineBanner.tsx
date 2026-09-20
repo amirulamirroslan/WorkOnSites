@@ -41,7 +41,7 @@ export default function OfflineBanner() {
   return (
     <div
       className={`fixed top-0 inset-x-0 z-50 px-4 py-2 text-xs font-medium text-center ${
-        online ? "bg-success-500 text-white" : "bg-warning-500 text-navy-950"
+        online ? "bg-success-500 text-white" : "bg-warning-500 text-white"
       }`}
     >
       {online ? "Back online — syncing…" : "You're offline. Your data will sync when connection is restored."}

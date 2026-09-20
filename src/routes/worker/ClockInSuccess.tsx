@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Check, MapPin } from "lucide-react";
+import { DarkScreen } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
 import { recordAttendanceEvent } from "../../lib/attendance";
@@ -39,39 +41,52 @@ export default function ClockInSuccess() {
   }, []);
 
   return (
-    <div className="surface-dark min-h-screen flex flex-col items-center justify-center px-6 text-center">
-      <div className="w-20 h-20 rounded-full bg-success-500/20 flex items-center justify-center mb-6">
-        <span className="text-success-500 text-3xl">✓</span>
-      </div>
-      <h1 className="display text-xl font-semibold mb-1">Clocked In!</h1>
-      <p className="font-display text-2xl font-bold mb-1">{time}</p>
-      <p className="text-white/50 text-sm mb-8">{pendingClockIn?.site.name}</p>
-
-      <div className="w-full rounded-card bg-navy-800 p-4 mb-4 space-y-2 text-sm text-left">
-        <div className="flex justify-between"><span className="text-white/60">Location verified</span><span className="text-success-500">✓</span></div>
-        <div className="flex justify-between">
-          <span className="text-white/60">Photo captured</span>
-          <span className={pendingClockIn?.photoBlob ? "text-success-500" : "text-white/40"}>
-            {pendingClockIn?.photoBlob ? "✓" : "Skipped"}
-          </span>
+    <DarkScreen className="px-5 pt-16 pb-8">
+      <div className="card text-ink-900 px-6 pt-10 pb-7 text-center">
+        <div className="w-24 h-24 rounded-full bg-success-500 mx-auto flex items-center justify-center shadow-[0_10px_30px_rgba(34,197,94,0.4)] mb-6">
+          <Check size={48} color="white" strokeWidth={3.5} />
         </div>
+        <h1 className="display text-xl font-bold mb-1">Clocked In!</h1>
+        <p className="font-display text-3xl font-bold text-ink-900 mb-2">{time}</p>
+        <p className="inline-flex items-center gap-1 text-brand text-sm font-semibold mb-6">
+          <MapPin size={14} /> {pendingClockIn?.site.name}
+        </p>
+
+        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 space-y-3 text-sm text-left">
+          <div className="flex items-center justify-between">
+            <span className="text-ink-900/70">Location verified</span>
+            <span className="text-success-600 font-semibold">✓</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-ink-900/70">Face captured</span>
+            <span className={pendingClockIn?.photoBlob ? "text-success-600 font-semibold" : "text-ink-900/40"}>
+              {pendingClockIn?.photoBlob ? "✓" : "Skipped"}
+            </span>
+          </div>
+        </div>
+
+        {status === "queued_offline" && (
+          <p className="text-warning-500 text-xs mt-4">
+            You're offline — this clock-in was saved on your device and will sync automatically once you're back online.
+          </p>
+        )}
+        {verificationStatus === "exception_override" && (
+          <p className="text-warning-500 text-xs mt-4">
+            Recorded as an out-of-range exception — flagged for your team leader/owner to review.
+          </p>
+        )}
+        {status === "saving" && <p className="text-ink-900/40 text-xs mt-4">Saving…</p>}
+        {status === "error" && (
+          <p className="text-danger-500 text-xs mt-4">We couldn't record this clock-in. Please go back and try again.</p>
+        )}
       </div>
 
-      {status === "queued_offline" && (
-        <p className="text-warning-500 text-xs mb-6">
-          You're offline — this clock-in was saved on your device and will sync automatically once you're back online.
-        </p>
-      )}
-      {verificationStatus === "exception_override" && (
-        <p className="text-warning-500 text-xs mb-6">
-          Recorded as an out-of-range exception — flagged for your team leader/owner to review.
-        </p>
-      )}
-      {status === "saving" && <p className="text-white/40 text-xs mb-6">Saving…</p>}
-
-      <button className="action-band" onClick={() => navigate("/worker/tasks")}>
-        View Today's Tasks
-      </button>
-    </div>
+      <div className="mt-auto pt-8">
+        <button className="action-band" onClick={() => navigate("/worker/tasks")}>
+          View Today's Tasks
+        </button>
+        <p className="text-white/60 text-xs text-center mt-4">You're all set. Have a great day!</p>
+      </div>
+    </DarkScreen>
   );
 }

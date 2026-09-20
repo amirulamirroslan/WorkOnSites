@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronRight, LogOut } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import MobileScreen, { Avatar } from "../../components/MobileScreen";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 
 export default function WorkerProfile() {
@@ -15,40 +16,40 @@ export default function WorkerProfile() {
   }, [profile]);
 
   return (
-    <div className="surface-dark min-h-screen pb-24 px-6 pt-10">
-      <h1 className="display text-lg font-semibold mb-6">Profile</h1>
-
-      <div className="rounded-card bg-navy-800 p-5 flex items-center gap-4 mb-6 shadow-lg shadow-black/20 border border-white/5">
-        <div className="w-14 h-14 rounded-full bg-brand flex items-center justify-center font-display text-lg font-semibold shrink-0">
-          {name.trim() ? name.split(" ").map((n) => n[0]).join("").slice(0, 2) : "?"}
+    <MobileScreen
+      header={
+        <div className="flex items-center gap-4">
+          <Avatar name={name} size={60} />
+          <div className="min-w-0">
+            <h1 className="display text-xl font-semibold truncate">{name || "Unknown"}</h1>
+            <p className="text-white/70 text-sm">Worker{site ? ` · ${site.name}` : ""}</p>
+          </div>
         </div>
-        <div className="min-w-0">
-          <p className="font-medium truncate">{name || "Unknown"}</p>
-          <p className="text-white/50 text-sm">Worker · {site?.name ?? "No site assigned"}</p>
-        </div>
-      </div>
-
-      <div className="rounded-card bg-navy-800 divide-y divide-white/5 mb-6 shadow-lg shadow-black/20 border border-white/5">
-        <button onClick={() => navigate("/worker/report-issue")} className="w-full flex items-center justify-between px-4 py-3 text-left">
-          <span className="flex items-center gap-2.5 text-sm">
-            <AlertTriangle size={16} className="text-white/40" strokeWidth={2} />
+      }
+    >
+      <div className="card divide-y divide-cloud-100 mb-6">
+        <button onClick={() => navigate("/worker/report-issue")} className="w-full flex items-center justify-between px-4 py-4 text-left">
+          <span className="flex items-center gap-3 text-sm font-medium">
+            <span className="w-8 h-8 rounded-full bg-brand-50 text-brand flex items-center justify-center">
+              <AlertTriangle size={16} strokeWidth={2} />
+            </span>
             Report an issue
           </span>
-          <ChevronRight size={16} className="text-white/30" />
+          <ChevronRight size={16} className="text-ink-900/25" />
         </button>
-        <div className="flex items-center justify-between px-4 py-3">
-          <span className="text-sm text-white/60">Status</span>
-          <span className="text-xs px-2 py-1 rounded-pill bg-success-500/20 text-success-500">Active</span>
+        <div className="flex items-center justify-between px-4 py-4">
+          <span className="text-sm text-ink-900/60">Status</span>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-pill bg-success-500/15 text-success-600">Active</span>
         </div>
       </div>
 
       <button
         onClick={signOut}
-        className="w-full flex items-center justify-center gap-2 rounded-card bg-white/5 text-danger-500 px-6 py-3 font-display font-semibold"
+        className="w-full flex items-center justify-center gap-2 rounded-2xl bg-white border border-cloud-100 text-danger-500 px-6 py-3.5 font-display font-semibold shadow-soft"
       >
         <LogOut size={17} strokeWidth={2.2} />
         Sign Out
       </button>
-    </div>
+    </MobileScreen>
   );
 }

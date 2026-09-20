@@ -10,8 +10,8 @@ export default defineConfig({
       manifest: {
         name: "WorkOnSite",
         short_name: "WorkOnSite",
-        theme_color: "#2E6BFF",
-        background_color: "#0A1220",
+        theme_color: "#061B45",
+        background_color: "#061B45",
         display: "standalone",
         icons: [
           { src: "/icon-192.png", sizes: "192x192", type: "image/png" },

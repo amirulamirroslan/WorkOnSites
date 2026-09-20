@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
+import { Camera, Check } from "lucide-react";
+import { DarkScreen, ScreenTitle, StepTracker } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 
 // Per spec §75 rule 13: this is a photo capture for attendance verification,
@@ -51,30 +53,52 @@ export default function ClockInFace() {
   }
 
   return (
-    <div className="surface-dark min-h-screen flex flex-col px-6 pt-10 pb-8">
-      <h1 className="display text-lg font-semibold mb-6">Face Capture</h1>
+    <DarkScreen className="px-5 pt-10 pb-8">
+      <ScreenTitle title="Verify Your Identity" back />
+      <div className="mt-5">
+        <StepTracker current={1} dark />
+      </div>
 
-      <div className="flex-1 rounded-card bg-navy-800 overflow-hidden flex items-center justify-center mb-6">
+      <div className="relative flex-1 min-h-[280px] rounded-3xl bg-navy-900 overflow-hidden flex items-center justify-center mt-6 mb-5 border border-white/10">
         {ready && !cameraError ? (
-          <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />
+          <video ref={videoRef} className="absolute inset-0 w-full h-full object-cover scale-x-[-1]" muted playsInline />
         ) : ready && cameraError ? (
-          <p className="text-white/50 text-sm text-center px-6">
+          <p className="text-white/60 text-sm text-center px-8">
             Camera unavailable — you can still clock in, but a photo won't be attached.
           </p>
         ) : (
-          <button className="text-white/60 text-sm underline" onClick={startCamera}>
+          <button className="flex flex-col items-center gap-2 text-white/70 text-sm" onClick={startCamera}>
+            <span className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center">
+              <Camera size={24} />
+            </span>
             Tap to enable camera
           </button>
         )}
+        {ready && !cameraError && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[62%] aspect-[3/4] rounded-[50%] border-2 border-brand-light/80 shadow-[0_0_0_999px_rgba(4,18,46,0.35)]" />
+          </div>
+        )}
       </div>
 
-      <div className="rounded-card bg-navy-800 p-4 mb-6 space-y-2 text-sm">
-        <div className="flex justify-between"><span className="text-white/60">Face detected</span><span className="text-success-500">✓</span></div>
-        <div className="flex justify-between"><span className="text-white/60">Good lighting</span><span className="text-success-500">✓</span></div>
-        <div className="flex justify-between"><span className="text-white/60">Position OK</span><span className="text-success-500">✓</span></div>
+      <div className="space-y-2.5 mb-6">
+        {["Face detected", "Good lighting", "Position OK"].map((label) => (
+          <div key={label} className="flex items-center gap-2.5 text-sm text-white/85">
+            <span className="w-[18px] h-[18px] rounded-full bg-success-500 flex items-center justify-center">
+              <Check size={11} color="white" strokeWidth={3.5} />
+            </span>
+            {label}
+          </div>
+        ))}
       </div>
 
-      <button className="w-14 h-14 rounded-full bg-white mx-auto mb-2" onClick={capture} aria-label="Capture photo" />
-    </div>
+      <button
+        className="w-[72px] h-[72px] rounded-full border-4 border-white/80 mx-auto flex items-center justify-center active:scale-95 transition-transform"
+        onClick={capture}
+        aria-label="Capture photo"
+      >
+        <span className="w-14 h-14 rounded-full bg-white" />
+      </button>
+    </DarkScreen>
   );
 }

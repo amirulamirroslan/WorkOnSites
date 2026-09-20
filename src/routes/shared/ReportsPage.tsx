@@ -107,7 +107,7 @@ export default function ReportsPage() {
             key={p}
             onClick={() => setPeriod(p)}
             className={`text-xs font-medium px-3 py-2 rounded-lg capitalize ${
-              period === p ? "bg-brand text-white" : "bg-white border border-black/5 text-ink-900/60"
+              period === p ? "bg-brand text-white" : "bg-white border border-cloud-100 shadow-soft text-ink-900/60"
             }`}
           >
             {p}
@@ -120,11 +120,11 @@ export default function ReportsPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-white rounded-card border border-black/5 p-4">
+            <div className="bg-white rounded-card border border-cloud-100 shadow-soft p-4">
               <p className="font-display text-xl font-bold">{attendanceRate}%</p>
               <p className="text-xs text-ink-900/50">Attendance rate ({label})</p>
             </div>
-            <div className="bg-white rounded-card border border-black/5 p-4">
+            <div className="bg-white rounded-card border border-cloud-100 shadow-soft p-4">
               <p className="font-display text-xl font-bold">{taskCompletionRate === null ? "—" : `${taskCompletionRate}%`}</p>
               <p className="text-xs text-ink-900/50">
                 {taskCompletionRate === null ? "No tasks scheduled in this period" : `Task completion (${label})`}
@@ -133,7 +133,7 @@ export default function ReportsPage() {
           </div>
 
           <p className="text-sm font-medium text-ink-900/60 mb-2">Site attendance ({label})</p>
-          <div className="bg-white rounded-card border border-black/5 p-4 space-y-3">
+          <div className="bg-white rounded-card border border-cloud-100 shadow-soft p-4 space-y-3">
             {perSite.length === 0 && <p className="text-sm text-ink-900/50">No sites yet.</p>}
             {perSite.map((s) => (
               <div key={s.site}>

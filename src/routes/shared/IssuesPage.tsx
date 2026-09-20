@@ -21,7 +21,7 @@ export default function IssuesPage() {
   return (
     <div>
       <h1 className="font-display text-xl font-semibold mb-6">Issues</h1>
-      <div className="bg-white rounded-card border border-black/5">
+      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
         {issues.map((i) => (
           <div key={i.id} className="list-row px-4 items-start">
             <div>

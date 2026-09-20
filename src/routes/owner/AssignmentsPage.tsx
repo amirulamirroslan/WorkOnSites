@@ -4,7 +4,7 @@ export default function AssignmentsPage() {
   return (
     <div>
       <h1 className="font-display text-xl font-semibold mb-6">Assignments</h1>
-      <div className="bg-white rounded-card border border-black/5">
+      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
         {assignmentsList.map((a) => (
           <div key={a.id} className="list-row px-4">
             <div>

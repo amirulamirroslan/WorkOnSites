@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import MobileScreen, { ScreenTitle } from "../../components/MobileScreen";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 
 const categories = [
@@ -53,16 +54,17 @@ export default function ReportIssue() {
   }
 
   return (
-    <div className="surface-dark min-h-screen flex flex-col px-6 pt-10 pb-8">
-      <h1 className="display text-lg font-semibold mb-6">Report Issue</h1>
-
-      <div className="grid grid-cols-3 gap-2 mb-6">
+    <MobileScreen header={<ScreenTitle title="Report Issue" />}>
+      <p className="font-display font-semibold mb-3">What's the problem?</p>
+      <div className="grid grid-cols-2 gap-2.5 mb-6">
         {categories.map((c) => (
           <button
             key={c.id}
             onClick={() => setCategory(c.id)}
-            className={`rounded-card px-3 py-4 text-xs text-center ${
-              category === c.id ? "bg-brand text-white" : "bg-navy-800 text-white/60"
+            className={`rounded-2xl px-3 py-4 text-sm font-medium text-center border transition-colors ${
+              category === c.id
+                ? "bg-brand text-white border-brand shadow-glow"
+                : "bg-white text-ink-900/70 border-cloud-100 shadow-soft"
             }`}
           >
             {c.label}
@@ -70,24 +72,24 @@ export default function ReportIssue() {
         ))}
       </div>
 
-      <p className="text-white/50 text-xs uppercase tracking-wide mb-2">Description</p>
+      <p className="font-display font-semibold mb-2">Description</p>
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={4}
         placeholder="Describe the issue…"
-        className="rounded-card bg-navy-800 p-4 text-sm text-white placeholder-white/30 mb-4 resize-none"
+        className="w-full rounded-2xl bg-white border border-cloud-100 p-4 text-sm text-ink-900 placeholder-ink-900/30 mb-4 resize-none outline-none focus:border-brand shadow-soft"
       />
 
       {error && <p className="text-danger-500 text-xs mb-4">{error}</p>}
 
       <button
-        className="action-band disabled:opacity-40"
+        className="action-band disabled:opacity-40 disabled:shadow-none"
         disabled={!category || !description || submitting}
         onClick={handleSubmit}
       >
         {submitting ? "Submitting…" : "Submit Report"}
       </button>
-    </div>
+    </MobileScreen>
   );
 }

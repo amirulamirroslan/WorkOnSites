@@ -6,17 +6,24 @@
   html {
     font-family: "Inter", sans-serif;
     font-feature-settings: "tnum" 1, "lnum" 1; /* tabular numerals for stat displays */
+    background: #04122e;
   }
   h1, h2, h3, .display {
-    font-family: "Inter Tight", sans-serif;
+    font-family: "Inter Tight", "Inter", sans-serif;
     letter-spacing: -0.01em;
   }
 }
 
 @layer components {
-  /* Worker mobile dark surface */
+  /* Deep-navy gradient used behind every worker (mobile) screen header,
+     the splash/login, and the desktop sidebar. */
+  .mobile-bg {
+    background: radial-gradient(120% 60% at 50% 0%, #123a7a 0%, #0a2a5e 35%, #061b45 100%);
+  }
+
+  /* Kept for any page not yet migrated — same navy look as .mobile-bg. */
   .surface-dark {
-    @apply bg-navy-950 text-white;
+    @apply mobile-bg text-white;
   }
 
   /* Desktop light surface (Team Leader / Owner) */
@@ -24,13 +31,28 @@
     @apply bg-cloud-50 text-ink-900;
   }
 
-  /* Full-bleed action band, not a card — e.g. "Clock In", "Continue Task" */
+  /* White elevated card used on light surfaces / sheets */
+  .card {
+    @apply bg-white rounded-2xl border border-cloud-100 shadow-soft;
+  }
+
+  /* Primary action button */
   .action-band {
-    @apply w-full rounded-card bg-brand text-white px-6 py-4 font-display text-lg font-semibold active:scale-[0.98] transition-transform;
+    @apply w-full rounded-2xl bg-brand text-white px-6 py-4 font-display text-base font-semibold shadow-glow active:scale-[0.98] transition-transform;
+  }
+
+  /* Secondary (light) button for dark backgrounds — e.g. Sign Up */
+  .action-light {
+    @apply w-full rounded-2xl bg-white/90 text-navy-800 px-6 py-4 font-display text-base font-semibold active:scale-[0.98] transition-transform;
+  }
+
+  /* Text input for dark backgrounds (login / register) */
+  .input-dark {
+    @apply w-full rounded-2xl bg-white/10 border border-white/15 px-4 py-3.5 text-sm text-white placeholder-white/40 outline-none focus:border-brand-light transition-colors;
   }
 
   /* Compact list row for lead/owner surfaces — avoids card-per-item overuse */
   .list-row {
-    @apply flex items-center justify-between py-3 border-b border-black/5;
+    @apply flex items-center justify-between py-3 border-b border-cloud-100 last:border-0;
   }
 }

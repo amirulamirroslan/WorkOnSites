@@ -63,7 +63,12 @@ to reflect where things stand now, so it doesn't just grow forever.
   column, which existed from the start but had no UPDATE policy or UI at
   all before. A reviewed exception shows "Reviewed" next to it
 
-## Visual polish
+## Visual redesign (matches supplied mockups)
+- Navy-gradient + light "sheet" layout for every worker screen (`components/MobileScreen.tsx`): Splash (Login / Sign Up + skyline), Login, Register, Worker Home (blue Clock In card, progress ring, task list), Checklist (filter tabs), Task detail + Photo Evidence, Clock In (Location w/ live map + Face steps), Clocked In success, Clock Out, Report Issue, Profile
+- Desktop: dark-navy sidebar with logo + user/sign-out, stat-card dashboards for Team Leader and Owner (data still mock, see below)
+- Bottom nav is Home / Tasks / Report / Profile (mockup shows Photos / More — no such routes exist yet)
+
+## Visual polish (earlier pass)
 - Real icon set (`lucide-react`) replacing plain text/unicode glyphs — bottom
   nav (Home/Tasks/Report/Profile) and the owner/lead sidebar had no real
   icons before (⌂ ☑ ! ● placeholders, or nothing at all on the sidebar)
@@ -85,7 +90,7 @@ to reflect where things stand now, so it doesn't just grow forever.
   doable from this side without their Supabase CLI login
 
 ## Setup checklist
-1. Run all migrations in `supabase/migrations/` in filename order (001–010)
+1. Run all migrations in `supabase/migrations/` in filename order (001–011)
 2. Deploy the Edge Function: `npx supabase functions deploy create-team-member`
 3. Copy `.env.example` → `.env`, fill in your Supabase URL + anon key
 4. `npm install && npm run dev`

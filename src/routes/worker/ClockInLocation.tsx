@@ -1,8 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
+import { Check, ChevronRight, MapPin } from "lucide-react";
+import MobileScreen, { ScreenTitle, StepTracker } from "../../components/MobileScreen";
 import { useAuth } from "../../context/AuthContext";
 import { useAppState } from "../../context/AppState";
 import { getMyAssignedSites, getCurrentPosition, distanceMeters, type AssignedSite } from "../../lib/attendance";
+
+const SiteMap = lazy(() => import("../../components/SiteMap"));
 
 type Phase = "loading_sites" | "picking_site" | "checking" | "verified" | "out_of_range" | "no_site" | "error";
 
@@ -82,12 +86,17 @@ export default function ClockInLocation() {
     navigate("/worker/clock-in/face");
   }
 
+  const header = (
+    <ScreenTitle title="Clock In" back="/worker" />
+  );
+
   if (phase === "picking_site") {
     return (
-      <div className="surface-dark min-h-screen flex flex-col px-6 pt-10 pb-8">
-        <h1 className="display text-lg font-semibold mb-1">Choose a Site</h1>
-        <p className="text-white/50 text-sm mb-6">You're assigned to more than one site — which one are you at?</p>
-        <div className="rounded-card bg-navy-800 divide-y divide-white/5">
+      <MobileScreen header={header} navSpace={false}>
+        <StepTracker current={0} />
+        <h2 className="font-display font-semibold text-lg mt-6 mb-1">Choose a Site</h2>
+        <p className="text-ink-900/50 text-sm mb-4">You're assigned to more than one site — which one are you at?</p>
+        <div className="card divide-y divide-cloud-100">
           {assignedSites.map((s) => (
             <button
               key={s.id}
@@ -95,66 +104,112 @@ export default function ClockInLocation() {
                 setSite(s);
                 setPhase("checking");
               }}
-              className="w-full flex items-center justify-between px-4 py-4 text-left"
+              className="w-full flex items-center gap-3 px-4 py-4 text-left"
             >
-              <div>
-                <p className="font-medium text-sm">{s.name}</p>
-                <p className="text-white/40 text-xs">{s.address || "No address set"}</p>
+              <span className="w-9 h-9 rounded-full bg-brand-50 text-brand flex items-center justify-center shrink-0">
+                <MapPin size={17} />
+              </span>
+              <div className="flex-1">
+                <p className="font-semibold text-sm">{s.name}</p>
+                <p className="text-ink-900/40 text-xs">{s.address || "No address set"}</p>
               </div>
-              <span className="text-white/30">›</span>
+              <ChevronRight size={16} className="text-ink-900/25" />
             </button>
           ))}
         </div>
-      </div>
+      </MobileScreen>
     );
   }
 
-  return (
-    <div className="surface-dark min-h-screen flex flex-col px-6 pt-10 pb-8">
-      <h1 className="display text-lg font-semibold mb-1">Verify Your Location</h1>
-      <p className="text-white/50 text-sm mb-6">Please make sure you are at the assigned site</p>
+  const verified = phase === "verified";
+  const checking = phase === "loading_sites" || phase === "checking";
 
-      <div className="flex-1 rounded-card bg-navy-800 flex items-center justify-center mb-6">
-        {(phase === "loading_sites" || phase === "checking") && <p className="text-white/50 text-sm">Getting your location…</p>}
-        {phase === "no_site" && (
-          <p className="text-white/50 text-sm text-center px-6">
-            You haven't been assigned to a site yet. Ask your team leader or owner to assign you one.
-          </p>
+  return (
+    <MobileScreen header={header} navSpace={false}>
+      <StepTracker current={0} />
+
+      <div
+        className={`mt-5 flex items-center gap-2 text-sm font-semibold ${
+          verified ? "text-success-600" : checking ? "text-ink-900/50" : "text-danger-500"
+        }`}
+      >
+        {verified && (
+          <span className="w-5 h-5 rounded-full bg-success-500 flex items-center justify-center">
+            <Check size={12} color="white" strokeWidth={3} />
+          </span>
         )}
-        {phase === "error" && <p className="text-danger-500 text-sm text-center px-6">{errorMsg}</p>}
-        {(phase === "verified" || phase === "out_of_range") && site && (
-          <div className="text-center">
-            <p className="font-display text-lg font-semibold">{site.name}</p>
-            <p className="text-white/50 text-sm">{distance}m from site</p>
+        {verified && "You're at the assigned location"}
+        {checking && "Getting your location…"}
+        {phase === "out_of_range" && "You're outside the assigned location"}
+        {phase === "no_site" && "No site assigned"}
+        {phase === "error" && "Couldn't verify location"}
+      </div>
+
+      <div className="card overflow-hidden mt-3 h-48 relative bg-brand-50">
+        {site && (
+          <Suspense fallback={<div className="h-full flex items-center justify-center text-ink-900/40 text-sm">Loading map…</div>}>
+            <SiteMap
+              latitude={site.latitude}
+              longitude={site.longitude}
+              radius={site.geofence_radius_m}
+              userLat={pendingClockIn?.latitude}
+              userLng={pendingClockIn?.longitude}
+            />
+          </Suspense>
+        )}
+        {!site && (
+          <div className="h-full flex items-center justify-center text-ink-900/50 text-sm text-center px-6">
+            {phase === "no_site"
+              ? "You haven't been assigned to a site yet. Ask your team leader or owner to assign you one."
+              : phase === "error"
+              ? errorMsg
+              : "Getting your location…"}
           </div>
         )}
       </div>
 
       {site && (
-        <div className="rounded-card bg-navy-800 p-4 mb-6 space-y-2">
-          <StatusLine
-            label="Location"
-            ok={phase === "verified"}
-            pending={phase === "checking"}
-            okText={`Within allowed area (${site.geofence_radius_m} m)`}
-          />
-          <StatusLine label="Verified" ok={phase === "verified"} pending={phase === "checking"} okText="GPS accuracy OK" />
+        <div className="card p-4 mt-4 flex items-start gap-3">
+          <span className="w-9 h-9 rounded-full bg-brand-50 text-brand flex items-center justify-center shrink-0">
+            <MapPin size={17} />
+          </span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm">{site.name}</p>
+            <p className="text-ink-900/40 text-xs">
+              {site.latitude.toFixed(4)}, {site.longitude.toFixed(4)}
+            </p>
+            <p className="text-xs text-ink-900/60 mt-1.5">
+              Distance {distance != null ? `${distance} m` : "—"}
+              {pendingClockIn?.accuracy != null && <> · Accuracy {Math.round(pendingClockIn.accuracy)} m</>}
+            </p>
+          </div>
+          <span
+            className={`text-[11px] font-semibold px-2.5 py-1 rounded-pill shrink-0 ${
+              verified
+                ? "bg-success-500/15 text-success-600"
+                : checking
+                ? "bg-cloud-100 text-ink-900/40"
+                : "bg-danger-500/10 text-danger-500"
+            }`}
+          >
+            {verified ? "Within range" : checking ? "Checking…" : `Limit ${site.geofence_radius_m} m`}
+          </span>
         </div>
       )}
 
       {phase === "out_of_range" && site && (
-        <div className="mb-4">
+        <div className="mt-4">
           <p className="text-danger-500 text-sm mb-3">
             You are approximately {distance}m from the assigned work area. Required: ≤ {site.geofence_radius_m}m. Please
             move closer to the site.
           </p>
           {!showOverrideForm ? (
-            <button className="text-brand text-xs font-medium underline" onClick={() => setShowOverrideForm(true)}>
+            <button className="text-brand text-xs font-semibold underline" onClick={() => setShowOverrideForm(true)}>
               I'm actually here — clock in anyway
             </button>
           ) : (
-            <div className="rounded-card bg-navy-800 p-4 space-y-2">
-              <p className="text-white/60 text-xs">
+            <div className="card p-4 space-y-2">
+              <p className="text-ink-900/60 text-xs">
                 This will be recorded as an out-of-range exception and flagged for your team leader/owner to review.
               </p>
               <textarea
@@ -162,10 +217,10 @@ export default function ClockInLocation() {
                 onChange={(e) => setOverrideReason(e.target.value)}
                 rows={2}
                 placeholder="Reason (e.g. GPS drift, site boundary is wider than mapped)…"
-                className="w-full rounded-lg bg-navy-950 p-3 text-sm text-white placeholder-white/30 resize-none"
+                className="w-full rounded-xl bg-cloud-50 border border-cloud-100 p-3 text-sm text-ink-900 placeholder-ink-900/30 resize-none outline-none focus:border-brand"
               />
               <button
-                className="w-full rounded-lg bg-warning-500 text-navy-950 px-4 py-2 text-sm font-semibold disabled:opacity-40"
+                className="w-full rounded-xl bg-warning-500 text-white px-4 py-2.5 text-sm font-semibold disabled:opacity-40"
                 disabled={!overrideReason.trim()}
                 onClick={submitOverride}
               >
@@ -177,23 +232,13 @@ export default function ClockInLocation() {
       )}
 
       <button
-        className="action-band disabled:opacity-40"
-        disabled={phase !== "verified"}
+        className="action-band disabled:opacity-40 disabled:shadow-none mt-6"
+        disabled={!verified}
         onClick={() => navigate("/worker/clock-in/face")}
       >
         Continue
       </button>
-    </div>
+    </MobileScreen>
   );
 }
 
-function StatusLine({ label, ok, pending, okText }: { label: string; ok: boolean; pending: boolean; okText: string }) {
-  return (
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-white/60">{label}</span>
-      <span className={pending ? "text-white/40" : ok ? "text-success-500" : "text-danger-500"}>
-        {pending ? "Checking…" : ok ? okText : "Not verified"}
-      </span>
-    </div>
-  );
-}

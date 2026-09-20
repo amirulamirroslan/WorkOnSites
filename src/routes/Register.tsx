@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import AuthShell from "../components/AuthShell";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -75,18 +76,21 @@ export default function Register() {
   }
 
   return (
-    <div className="surface-dark min-h-screen flex flex-col justify-center items-center gap-6 px-6">
-      <img src="/logo.png" alt="" width={64} height={64} className="rounded-2xl" aria-hidden />
-      <h1 className="display text-xl font-semibold">Create your organization</h1>
+    <AuthShell skyline="none">
+      <div className="flex flex-col items-center text-center mb-8">
+        <img src="/logo.png" alt="" width={56} height={56} className="rounded-2xl shadow-glow mb-3" aria-hidden />
+        <h1 className="display text-xl font-semibold">Create your organization</h1>
+        <p className="text-white/60 text-sm mt-1">Set up WorkOnSite for your team</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-xs flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
         <input
           type="text"
           placeholder="Organization name"
           value={orgName}
           onChange={(e) => setOrgName(e.target.value)}
           required
-          className="rounded-card bg-navy-800 px-4 py-3 text-sm placeholder-white/30"
+          className="input-dark"
         />
         <input
           type="text"
@@ -94,7 +98,7 @@ export default function Register() {
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           required
-          className="rounded-card bg-navy-800 px-4 py-3 text-sm placeholder-white/30"
+          className="input-dark"
         />
         <input
           type="email"
@@ -103,7 +107,7 @@ export default function Register() {
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="email"
-          className="rounded-card bg-navy-800 px-4 py-3 text-sm placeholder-white/30"
+          className="input-dark"
         />
         <input
           type="password"
@@ -113,17 +117,17 @@ export default function Register() {
           required
           minLength={8}
           autoComplete="new-password"
-          className="rounded-card bg-navy-800 px-4 py-3 text-sm placeholder-white/30"
+          className="input-dark"
         />
-        {error && <p className="text-danger-500 text-xs">{error}</p>}
+        {error && <p className="text-red-300 text-xs">{error}</p>}
         <button type="submit" disabled={submitting} className="action-band disabled:opacity-40 mt-2">
           {submitting ? "Creating…" : "Create account"}
         </button>
       </form>
 
-      <p className="text-white/50 text-xs">
-        Already have an account? <a href="/login" className="text-brand font-medium">Log in</a>
+      <p className="text-white/60 text-xs text-center mt-6">
+        Already have an account? <a href="/login" className="text-brand-light font-semibold">Log in</a>
       </p>
-    </div>
+    </AuthShell>
   );
 }

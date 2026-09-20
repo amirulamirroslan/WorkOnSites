@@ -71,7 +71,7 @@ export default function SitesPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-card border border-black/5">
+      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
         {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && sites.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No sites yet — add your first one.</p>
@@ -123,6 +123,7 @@ function AddSiteModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
   const [position, setPosition] = useState<[number, number]>(DEFAULT_CENTER);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { profile } = useAuth();
 
   function useMyLocation() {
     navigator.geolocation?.getCurrentPosition(
@@ -134,8 +135,13 @@ function AddSiteModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!profile?.organization_id) {
+      setError("Your account isn't linked to an organization yet. Please sign out and back in.");
+      return;
+    }
     setSubmitting(true);
     const { error: insertErr } = await supabase.from("sites").insert({
+      organization_id: profile.organization_id,
       name,
       address: address || null,
       latitude: position[0],

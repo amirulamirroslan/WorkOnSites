@@ -10,21 +10,21 @@ const items = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 inset-x-0 bg-navy-800/95 backdrop-blur border-t border-white/10 flex justify-around py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white rounded-t-3xl shadow-[0_-6px_24px_rgba(10,42,94,0.12)] flex justify-around pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] z-40">
       {items.map(({ to, label, Icon }) => (
         <NavLink
           key={to}
           to={to}
           end={to === "/worker"}
           className={({ isActive }) =>
-            `flex flex-col items-center gap-1 text-[11px] px-4 py-1.5 rounded-xl transition-colors ${
-              isActive ? "text-brand" : "text-white/40"
+            `flex flex-col items-center gap-1 text-[11px] font-medium px-4 py-1.5 rounded-xl transition-colors ${
+              isActive ? "text-brand" : "text-ink-900/40"
             }`
           }
         >
           {({ isActive }) => (
             <>
-              <Icon size={20} strokeWidth={isActive ? 2.4 : 2} />
+              <Icon size={21} strokeWidth={isActive ? 2.4 : 2} />
               {label}
             </>
           )}

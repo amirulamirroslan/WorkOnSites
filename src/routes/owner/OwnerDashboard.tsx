@@ -1,5 +1,8 @@
 import { Outlet } from "react-router-dom";
+import { CalendarCheck, ListChecks, MapPin, AlertTriangle } from "lucide-react";
 import NavRail from "../../components/NavRail";
+import Skyline from "../../components/Skyline";
+import { BarRow, DateChip, PersonRow, Panel, StatCard } from "../../components/DashboardBits";
 import { liveWorkers, sitePerformance, ownerKpis } from "../../lib/mockData";
 
 const navItems = [
@@ -19,7 +22,7 @@ export function OwnerLayout() {
   return (
     <div className="surface-light flex min-h-screen">
       <NavRail items={navItems} />
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 min-w-0">
         <Outlet />
       </main>
     </div>
@@ -29,60 +32,52 @@ export function OwnerLayout() {
 export default function OwnerDashboard() {
   return (
     <div>
-      <h1 className="font-display text-xl font-semibold mb-6">Operations Overview</h1>
-
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        <Stat label="Attendance" value={ownerKpis.attendance} />
-        <Stat label="Task Completion" value={ownerKpis.taskCompletion} />
-        <Stat label="Sites Active" value={String(ownerKpis.sitesActive)} />
-        <Stat label="High Priority Issues" value={String(ownerKpis.highPriorityIssues)} tone="danger" />
+      <div className="flex items-start justify-between mb-7">
+        <div>
+          <h1 className="font-display text-xl font-bold">Operations Overview</h1>
+          <p className="text-sm text-ink-900/50 mt-1">Performance across all of your sites</p>
+        </div>
+        <DateChip />
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
-        <div>
-          <p className="text-sm font-medium text-ink-900/60 mb-2">Site Performance</p>
-          <div className="bg-white rounded-card border border-black/5 p-4 space-y-3">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <StatCard label="Attendance" value={ownerKpis.attendance} Icon={CalendarCheck} tone="brand" />
+        <StatCard label="Task Completion" value={ownerKpis.taskCompletion} Icon={ListChecks} tone="success" />
+        <StatCard label="Sites Active" value={String(ownerKpis.sitesActive)} Icon={MapPin} tone="brand" />
+        <StatCard label="High Priority Issues" value={String(ownerKpis.highPriorityIssues)} Icon={AlertTriangle} tone="danger" />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+        <Panel title="Site Performance">
+          <div className="space-y-4">
             {sitePerformance.map((s) => (
-              <div key={s.site}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-ink-900/70">{s.site}</span>
-                  <span className="text-ink-900/50">{s.percent}%</span>
-                </div>
-                <div className="h-1.5 rounded-pill bg-black/5">
-                  <div className="h-1.5 rounded-pill bg-brand" style={{ width: `${s.percent}%` }} />
-                </div>
-              </div>
+              <BarRow key={s.site} label={s.site} percent={s.percent} />
             ))}
           </div>
-        </div>
+        </Panel>
+        <Panel title="Live Workers">
+          {liveWorkers.map((w) => (
+            <PersonRow
+              key={w.id}
+              name={w.name}
+              sub={w.site}
+              online={w.status === "on_site"}
+              right={<span className={w.status === "on_site" ? "text-success-600 font-medium" : ""}>{w.status === "on_site" ? "On site" : "Not clocked in"}</span>}
+            />
+          ))}
+        </Panel>
+      </div>
 
-        <div>
-          <p className="text-sm font-medium text-ink-900/60 mb-2">Live Workers</p>
-          <div className="bg-white rounded-card border border-black/5">
-            {liveWorkers.map((w) => (
-              <div key={w.id} className="list-row px-4">
-                <div>
-                  <p className="font-medium text-sm">{w.name}</p>
-                  <p className="text-xs text-ink-900/50">{w.site}</p>
-                </div>
-                <span className={`text-xs ${w.status === "on_site" ? "text-success-500" : "text-ink-900/40"}`}>
-                  {w.status === "on_site" ? "On site" : "Not clocked in"}
-                </span>
-              </div>
-            ))}
+      <div className="relative overflow-hidden rounded-2xl mobile-bg text-white p-8 h-40 flex items-center shadow-soft">
+        <Skyline className="absolute inset-y-0 right-28 h-full w-[52%] opacity-75" />
+        <div className="relative flex items-center justify-between w-full">
+          <p className="display text-xl font-bold leading-snug max-w-xs">Cleaner Sites. Safer People. Better Work.</p>
+          <div className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="" width={36} height={36} className="rounded-xl" aria-hidden />
+            <span className="display font-extrabold">Work<span className="text-brand-light">O</span>nSite</span>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, tone }: { label: string; value: string; tone?: "danger" }) {
-  const color = tone === "danger" ? "text-danger-500" : "text-ink-900";
-  return (
-    <div className="bg-white rounded-card border border-black/5 p-4">
-      <p className={`font-display text-xl font-bold ${color}`}>{value}</p>
-      <p className="text-xs text-ink-900/50">{label}</p>
     </div>
   );
 }

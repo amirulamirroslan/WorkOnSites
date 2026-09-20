@@ -38,7 +38,7 @@ export default function ChecklistsPage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-card border border-black/5">
+      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
         {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && templates.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No templates yet.</p>}
         {templates.map((t) => (

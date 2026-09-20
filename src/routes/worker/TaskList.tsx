@@ -1,71 +1,92 @@
 import { Link } from "react-router-dom";
-import { ChevronRight, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronRight } from "lucide-react";
+import ProgressRing from "../../components/ProgressRing";
+import MobileScreen, { ScreenTitle, SitePill } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
+import { useAuth } from "../../context/AuthContext";
+import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
+import { TaskStatusIcon, statusColor, statusLabel } from "./WorkerHome";
 
-const statusColor: Record<string, string> = {
-  completed: "text-success-500",
-  in_progress: "text-warning-500",
-  pending: "text-white/40",
-  blocked: "text-danger-500",
-};
-
-function StatusDot({ status }: { status: string }) {
-  if (status === "completed") {
-    return (
-      <span className="w-6 h-6 rounded-full bg-success-500 flex items-center justify-center shrink-0">
-        <Check size={13} color="white" strokeWidth={3} />
-      </span>
-    );
-  }
-  if (status === "in_progress") {
-    return (
-      <span className="w-6 h-6 rounded-full border-2 border-warning-500 flex items-center justify-center shrink-0">
-        <span className="w-2.5 h-2.5 rounded-full bg-warning-500" />
-      </span>
-    );
-  }
-  if (status === "blocked") {
-    return (
-      <span className="w-6 h-6 rounded-full bg-danger-500 flex items-center justify-center shrink-0 text-white text-xs font-bold">
-        !
-      </span>
-    );
-  }
-  return <span className="w-6 h-6 rounded-full border-2 border-white/20 shrink-0" />;
-}
+type Filter = "all" | "completed" | "pending";
 
 export default function TaskList() {
   const { tasks } = useAppState();
-  const completedCount = tasks.filter((t) => t.status === "completed").length;
+  const { profile } = useAuth();
+  const [site, setSite] = useState<AssignedSite | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+
+  useEffect(() => {
+    if (profile) getMyAssignedSite(profile.id).then(setSite);
+  }, [profile]);
+
+  const completed = tasks.filter((t) => t.status === "completed");
+  const pending = tasks.filter((t) => t.status !== "completed");
+  const percent = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
+  const visible = filter === "all" ? tasks : filter === "completed" ? completed : pending;
+  const today = new Date().toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+
+  const tabs: { id: Filter; label: string; count: number }[] = [
+    { id: "all", label: "All", count: tasks.length },
+    { id: "completed", label: "Completed", count: completed.length },
+    { id: "pending", label: "Pending", count: pending.length },
+  ];
 
   return (
-    <div className="surface-dark min-h-screen pb-24">
-      <header className="px-6 pt-10 pb-4">
-        <h1 className="display text-lg font-semibold">Today's Tasks</h1>
-        <p className="text-white/50 text-sm">{completedCount} / {tasks.length} completed</p>
-      </header>
-
-      <div className="px-6">
-        {tasks.length === 0 && <p className="text-white/40 text-sm py-6">No tasks assigned for today.</p>}
-        {tasks.length > 0 && (
-          <div className="rounded-card bg-navy-800 divide-y divide-white/5 shadow-lg shadow-black/20 border border-white/5">
-            {tasks.map((task) => (
-              <Link
-                key={task.id}
-                to={task.checklist.length ? `/worker/tasks/${task.id}` : "#"}
-                className="flex items-center gap-3 px-4 py-3"
-              >
-                <StatusDot status={task.status} />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{task.title}</p>
-                  <p className={`text-xs ${statusColor[task.status]}`}>{task.subtitle}</p>
-                </div>
-                <ChevronRight size={16} className="text-white/20 shrink-0" />
-              </Link>
-            ))}
+    <MobileScreen
+      header={
+        <div>
+          <ScreenTitle title="Checklist" />
+          <div className="flex items-center justify-between mt-3">
+            {site ? <SitePill name={site.name} /> : <span />}
+            <span className="text-white/60 text-xs">{today}</span>
           </div>
-        )}
+        </div>
+      }
+    >
+      <div className="card p-5 flex items-center gap-5">
+        <ProgressRing percent={percent} />
+        <div>
+          <p className="font-display text-xl font-bold">
+            {completed.length} / {tasks.length} <span className="text-sm font-semibold">tasks</span>
+          </p>
+          <p className="text-ink-900/50 text-sm">Completed</p>
+        </div>
       </div>
-    </div>
+
+      <div className="flex gap-2 mt-5 mb-4">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setFilter(t.id)}
+            className={`text-xs font-semibold px-3.5 py-2 rounded-pill transition-colors ${
+              filter === t.id ? "bg-brand text-white shadow-glow" : "bg-white text-ink-900/60 border border-cloud-100"
+            }`}
+          >
+            {t.label} ({t.count})
+          </button>
+        ))}
+      </div>
+
+      {visible.length === 0 && <p className="text-ink-900/40 text-sm py-6 text-center">No tasks here.</p>}
+      {visible.length > 0 && (
+        <div className="card divide-y divide-cloud-100">
+          {visible.map((task) => (
+            <Link
+              key={task.id}
+              to={task.checklist.length ? `/worker/tasks/${task.id}` : "#"}
+              className="flex items-center gap-3 px-4 py-3.5"
+            >
+              <TaskStatusIcon status={task.status} />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm truncate">{task.title}</p>
+                <p className={`text-xs ${statusColor[task.status]}`}>{task.subtitle || statusLabel[task.status]}</p>
+              </div>
+              <ChevronRight size={16} className="text-ink-900/25 shrink-0" />
+            </Link>
+          ))}
+        </div>
+      )}
+    </MobileScreen>
   );
 }
