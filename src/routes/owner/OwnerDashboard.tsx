@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { CalendarCheck, ListChecks, MapPin, AlertTriangle } from "lucide-react";
+import { PageLoader } from "../../components/Loading";
 import NavRail from "../../components/NavRail";
 import Skyline from "../../components/Skyline";
 import { BarRow, DateChip, PersonRow, Panel, StatCard } from "../../components/DashboardBits";
@@ -26,7 +28,9 @@ export function OwnerLayout() {
       <NavRail items={navItems} />
       <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
         <div key={pathname} className="page-enter">
-          <Outlet />
+          <Suspense fallback={<PageLoader />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>

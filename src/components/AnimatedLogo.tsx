@@ -21,7 +21,7 @@ export default function AnimatedLogo({
         </>
       )}
       <img
-        src="/logo.png"
+        src="/logo-256.png"
         alt=""
         width={size}
         height={size}

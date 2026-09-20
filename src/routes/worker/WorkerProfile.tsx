@@ -1,19 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronRight, LogOut } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import MobileScreen, { Avatar } from "../../components/MobileScreen";
-import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
+import { useAppState } from "../../context/AppState";
 
 export default function WorkerProfile() {
   const navigate = useNavigate();
   const { signOut, profile } = useAuth();
-  const [site, setSite] = useState<AssignedSite | null>(null);
+  const { site } = useAppState();
   const name = profile?.full_name ?? "";
-
-  useEffect(() => {
-    if (profile) getMyAssignedSite(profile.id).then(setSite);
-  }, [profile]);
 
   return (
     <MobileScreen

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import AnimatedLogo from "./AnimatedLogo";
 
 // Shared shell for every worker screen.
 //
@@ -29,7 +30,16 @@ export default function MobileScreen({
         <div className={`mobile-bg lg:bg-none text-white min-h-screen flex flex-col md:max-w-2xl md:mx-auto ${
             wide ? "lg:max-w-6xl" : "lg:max-w-3xl"
           } lg:min-h-0 lg:px-8 lg:pt-8 lg:pb-10`}>
-          <div className="px-5 pt-10 pb-7 lg:mobile-bg lg:rounded-2xl lg:px-8 lg:py-8 lg:shadow-soft">{header}</div>
+          <div className="px-5 pt-5 pb-7 lg:mobile-bg lg:rounded-2xl lg:px-8 lg:py-8 lg:shadow-soft">
+            {/* Phone only: the laptop layout already shows the logo in the sidebar. */}
+            <div className="lg:hidden flex items-center gap-2 mb-5">
+              <AnimatedLogo size={26} glow={false} />
+              <span className="display text-sm font-extrabold tracking-tight">
+                Work<span className="text-brand-light">O</span>nSite
+              </span>
+            </div>
+            {header}
+          </div>
           <div
             className={`flex-1 bg-cloud-50 text-ink-900 rounded-t-xl2 px-5 pt-6 pb-28 lg:flex-none lg:bg-transparent lg:rounded-none lg:px-0 lg:pt-6 lg:pb-0 ${sheetClassName}`}
           >

@@ -5,6 +5,7 @@ import MobileScreen, { ScreenTitle } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
 import { Spinner } from "../../components/Loading";
+import { compressImage } from "../../lib/image";
 import { fetchTaskPhotos, uploadTaskPhoto, type TaskPhoto } from "../../lib/tasks";
 
 export default function TaskChecklist() {
@@ -32,7 +33,7 @@ export default function TaskChecklist() {
     e.target.value = "";
     if (!file || !profile || !taskId) return;
     setUploading(true);
-    const photo = await uploadTaskPhoto(taskId, profile.id, file);
+    const photo = await uploadTaskPhoto(taskId, profile.id, await compressImage(file));
     if (photo) setPhotos((p) => [...p, photo]);
     setUploading(false);
   }
@@ -100,7 +101,7 @@ export default function TaskChecklist() {
       <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileSelected} />
       <div className="grid grid-cols-3 gap-2.5 mb-8">
         {photos.map((p) => (
-          <img key={p.id} src={p.url} alt="" className="aspect-square rounded-xl object-cover bg-cloud-100" />
+          <img key={p.id} src={p.url} alt="" loading="lazy" decoding="async" className="aspect-square rounded-xl object-cover bg-cloud-100" />
         ))}
         <button
           onClick={() => fileInputRef.current?.click()}

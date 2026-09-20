@@ -112,3 +112,25 @@ verification, face capture, task list/checklist, clock-out, offline mode,
 issue reporting, team leader/owner dashboards, sites/profile/reports/settings
 screens) — ask if something doesn't match, since the mockups are the source
 of truth over anything written here.
+
+## UI motion & performance pass (current state)
+- **Motion** lives in one place: the "Motion" sections at the bottom of
+  `src/styles/index.css` (transform/opacity only, `prefers-reduced-motion`
+  respected). Pieces: `AnimatedLogo` (gloss sweep + beacon rings; also shown in the phone-only brand row at the top of every worker tab in `MobileScreen`), sliding
+  selected-item pill in `NavRail`/`BottomNav`, `Loading.tsx` (branded
+  `LoadingScreen`, `PageLoader`, `Spinner`, skeletons), `SuccessBadge`,
+  page-enter transition on every layout, `useAnimatedNumber` (count-ups on
+  stat cards / bars / progress ring), `.press` / `.press-row` tap feedback.
+- **Data loading**: tasks + assigned site are fetched in parallel using
+  `session.user.id` (profiles.id === auth.users.id) instead of waiting behind
+  the profile fetch, and cached in `AppState` (`site`) instead of re-fetched on
+  every tab visit. They refresh quietly when the app returns to the foreground
+  after 60s. Auth/AppState context values are memoised.
+- **Bundle**: owner/team-leader screens are lazy chunks (`App.tsx`); react and
+  supabase are split into long-lived vendor chunks (`vite.config.ts`) so app
+  updates re-download ~23 kB gz, not the whole bundle. Google Fonts are
+  runtime-cached for offline use.
+- **Assets/uploads**: the logo shown in the UI is `public/logo-256.png` (4.5 kB;
+  the old 213 kB `logo.png` was being downloaded for a 28–84 px image).
+  Checklist photos are downscaled to 1600 px JPEG before upload
+  (`src/lib/image.ts`) — raw camera photos are 3–8 MB.

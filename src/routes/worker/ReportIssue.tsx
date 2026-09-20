@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import MobileScreen, { ScreenTitle } from "../../components/MobileScreen";
 import { Spinner } from "../../components/Loading";
-import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
+import { useAppState } from "../../context/AppState";
 
 const categories = [
   { id: "access_problem", label: "Access Problem" },
@@ -17,17 +17,13 @@ const categories = [
 export default function ReportIssue() {
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const { site } = useAppState();
   const [category, setCategory] = useState<string | null>(null);
   const [description, setDescription] = useState("");
-  const [site, setSite] = useState<AssignedSite | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const leaveTimer = useRef<number>();
-
-  useEffect(() => {
-    if (profile) getMyAssignedSite(profile.id).then(setSite);
-  }, [profile]);
 
   // Don't bounce the user back if they navigate away during the success beat.
   useEffect(() => () => window.clearTimeout(leaveTimer.current), []);

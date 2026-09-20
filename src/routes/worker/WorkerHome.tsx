@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { ArrowUpRight, Check, ChevronRight } from "lucide-react";
 import ProgressRing from "../../components/ProgressRing";
 import MobileScreen, { Avatar, SitePill } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
-import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 import { TaskRowsSkeleton } from "../../components/Loading";
 
 export function TaskStatusIcon({ status }: { status: "pending" | "in_progress" | "completed" | "blocked" }) {
@@ -57,15 +55,10 @@ function greeting() {
 export default function WorkerHome() {
   const navigate = useNavigate();
   const { profile, profileLoading } = useAuth();
-  const { tasks, tasksLoading, clockStatus, clockInTime } = useAppState();
-  const [site, setSite] = useState<AssignedSite | null>(null);
+  const { site, tasks, tasksLoading, clockStatus, clockInTime } = useAppState();
   const completedCount = tasks.filter((t) => t.status === "completed").length;
   const percent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
   const today = new Date().toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
-
-  useEffect(() => {
-    if (profile) getMyAssignedSite(profile.id).then(setSite);
-  }, [profile]);
 
   if (!profileLoading && !profile) {
     return (

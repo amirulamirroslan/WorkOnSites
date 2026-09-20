@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   }, [session]);
 
-  async function signIn(emailOrUsername: string, password: string) {
+  const signIn = useCallback(async (emailOrUsername: string, password: string) => {
     // Team leaders/workers created via the "Add team member" flow have no
     // real email — they sign in with just their username, which maps to a
     // synthetic "<username>@workonsite.internal" auth email under the hood.
@@ -69,17 +69,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       : `${emailOrUsername.trim().toLowerCase()}@workonsite.internal`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
-  }
+  }, []);
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
-  }
+  }, []);
 
-  return (
-    <AuthContext.Provider value={{ session, profile, loading, profileLoading, signIn, signOut }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ session, profile, loading, profileLoading, signIn, signOut }),
+    [session, profile, loading, profileLoading, signIn, signOut]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

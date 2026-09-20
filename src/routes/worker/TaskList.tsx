@@ -1,25 +1,17 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import ProgressRing from "../../components/ProgressRing";
 import MobileScreen, { ScreenTitle, SitePill } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
-import { useAuth } from "../../context/AuthContext";
-import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 import { TaskStatusIcon, statusColor, statusLabel } from "./WorkerHome";
 import { TaskRowsSkeleton } from "../../components/Loading";
 
 type Filter = "all" | "completed" | "pending";
 
 export default function TaskList() {
-  const { tasks, tasksLoading } = useAppState();
-  const { profile } = useAuth();
-  const [site, setSite] = useState<AssignedSite | null>(null);
+  const { site, tasks, tasksLoading } = useAppState();
   const [filter, setFilter] = useState<Filter>("all");
-
-  useEffect(() => {
-    if (profile) getMyAssignedSite(profile.id).then(setSite);
-  }, [profile]);
 
   const completed = tasks.filter((t) => t.status === "completed");
   const pending = tasks.filter((t) => t.status !== "completed");

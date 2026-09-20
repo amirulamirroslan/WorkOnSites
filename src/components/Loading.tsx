@@ -57,7 +57,11 @@ export function PageLoader({ label = "Loading" }: { label?: string }) {
 }
 
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div aria-hidden className={`skeleton rounded-lg ${className}`} />;
+  // Tailwind orders `rounded-full` before `rounded-lg` in the generated CSS, so
+  // adding both would make the default win — only apply the default radius
+  // when the caller didn't pass one.
+  const radius = /(^|\s)rounded/.test(className) ? "" : "rounded-lg";
+  return <div aria-hidden className={`skeleton ${radius} ${className}`} />;
 }
 
 // Rows for owner / team-leader list cards (workers, sites, attendance…).
