@@ -39,12 +39,14 @@ export default function OfflineBanner() {
   if (online && !justReconnected) return null;
 
   return (
-    <div
-      className={`fixed top-0 inset-x-0 z-50 px-4 py-2 text-xs font-medium text-center ${
-        online ? "bg-success-500 text-white" : "bg-warning-500 text-white"
-      }`}
-    >
-      {online ? "Back online — syncing…" : "You're offline. Your data will sync when connection is restored."}
+    <div className="fixed top-3 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
+      <div
+        className={`pointer-events-auto backdrop-blur-xl border rounded-pill px-4 py-2 text-xs font-medium text-center text-white shadow-glass-dark ${
+          online ? "bg-success-500/80 border-success-500/40" : "bg-warning-500/80 border-warning-500/40"
+        }`}
+      >
+        {online ? "Back online — syncing…" : "You're offline. Your data will sync when connection is restored."}
+      </div>
     </div>
   );
 }

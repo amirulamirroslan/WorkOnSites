@@ -66,7 +66,7 @@ export default function ClockInSuccess() {
           <MapPin size={14} /> {pendingClockIn?.site.name}
         </p>
 
-        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 space-y-3 text-sm text-left">
+        <div className="rounded-2xl glass p-4 space-y-3 text-sm text-left">
           <div className="flex items-center justify-between">
             <span className="text-ink-900/70">Location verified</span>
             <span className="text-success-600 font-semibold">✓</span>

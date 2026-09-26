@@ -64,7 +64,7 @@ export default function ReportIssue() {
             className={`rounded-2xl px-3 py-4 text-sm font-medium text-center border transition-colors ${
               category === c.id
                 ? "bg-brand text-white border-brand shadow-glow"
-                : "bg-white text-ink-900/70 border-cloud-100 shadow-soft"
+                : "glass text-ink-900/70"
             }`}
           >
             {c.label}
@@ -78,7 +78,7 @@ export default function ReportIssue() {
         onChange={(e) => setDescription(e.target.value)}
         rows={4}
         placeholder="Describe the issue…"
-        className="w-full rounded-2xl bg-white border border-cloud-100 p-4 text-sm text-ink-900 placeholder-ink-900/30 mb-4 resize-none outline-none focus:border-brand shadow-soft"
+        className="w-full rounded-2xl glass p-4 text-sm text-ink-900 placeholder-ink-900/30 mb-4 resize-none outline-none focus:border-brand"
       />
 
       {error && <p className="text-danger-500 text-xs mb-4">{error}</p>}

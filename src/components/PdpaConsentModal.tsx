@@ -9,9 +9,9 @@ export default function PdpaConsentModal({ onAccept }: { onAccept: () => void })
   const [checked, setChecked] = useState(false);
 
   return (
-    <div className="fixed inset-0 z-50 bg-navy-950/80 backdrop-blur-sm flex items-end md:items-center justify-center p-4">
-      <div className="bg-white text-ink-900 rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-        <div className="px-6 pt-6 pb-4 border-b border-cloud-100">
+    <div className="fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-end md:items-center justify-center p-4">
+      <div className="glass !bg-white/80 text-ink-900 rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden">
+        <div className="px-6 pt-6 pb-4 border-b border-white/50">
           <h2 className="font-display text-lg font-bold">Personal Data Protection Notice</h2>
           <p className="text-ink-900/50 text-xs mt-1">Required under Malaysia's Personal Data Protection Act 2010</p>
         </div>
@@ -31,7 +31,7 @@ export default function PdpaConsentModal({ onAccept }: { onAccept: () => void })
           <p>By continuing, you consent to this collection and processing under the PDPA 2010.</p>
         </div>
 
-        <div className="px-6 py-4 border-t border-cloud-100 space-y-3">
+        <div className="px-6 py-4 border-t border-white/50 space-y-3">
           <label className="flex items-start gap-2.5 text-xs text-ink-900/70">
             <input
               type="checkbox"

@@ -47,7 +47,7 @@ export default function NavRail({ items }: { items: { to: string; label: string 
   return (
     <>
       {/* Phone / tablet: slim top bar with a menu button; the sidebar becomes a drawer */}
-      <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-navy-800 text-white px-4 py-3 shadow-soft">
+      <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 glass-dark px-4 py-3">
         <button onClick={() => setOpen(true)} aria-label="Open menu" className="p-1 -ml-1 rounded-lg hover:bg-white/10">
           <Menu size={22} />
         </button>
@@ -72,7 +72,7 @@ export default function NavRail({ items }: { items: { to: string; label: string 
         initial={false}
         animate={{ x: open ? 0 : "-100%" }}
         transition={{ type: "spring", stiffness: 340, damping: 34 }}
-        className="fixed inset-y-0 left-0 z-50 w-64 lg:!translate-x-0 lg:static lg:!transform-none lg:sticky lg:top-0 lg:z-auto lg:w-60 lg:shrink-0 lg:h-screen bg-gradient-to-b from-navy-800 to-navy-900 text-white py-7 px-4 flex flex-col"
+        className="fixed inset-y-0 left-0 z-50 w-64 lg:!translate-x-0 lg:static lg:!transform-none lg:sticky lg:top-0 lg:z-auto lg:w-60 lg:shrink-0 lg:h-screen glass-dark rounded-none lg:m-4 lg:rounded-3xl lg:h-[calc(100vh-2rem)] py-7 px-4 flex flex-col"
       >
         <div className="flex items-center gap-2.5 px-2 mb-9">
           <img src="/logo.png" alt="" width={34} height={34} className="rounded-xl" aria-hidden />

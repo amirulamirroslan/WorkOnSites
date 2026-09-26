@@ -65,7 +65,7 @@ export default function WorkersPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
+      <div className="glass rounded-card">
         {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && members.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No team members yet.</p>
@@ -121,14 +121,14 @@ export default function WorkersPage() {
       )}
       {createdCreds && (
         <ModalBackdrop onClose={() => setCreatedCreds(null)}>
-          <div className="bg-white rounded-card p-6 max-w-xs w-full">
+          <div className="glass rounded-card p-6 max-w-xs w-full">
             <h2 className="font-display font-semibold mb-2">{createdCreds.title}</h2>
             <p className="text-xs text-ink-900/60 mb-4">
               {createdCreds.name ? `New temporary password for ${createdCreds.name}. ` : ""}
               Share these sign-in details directly — they aren't emailed or shown again. They'll be asked to choose
               their own password when they sign in.
             </p>
-            <div className="bg-cloud-50 rounded-lg p-3 text-sm mb-4">
+            <div className="glass rounded-lg p-3 text-sm mb-4">
               <p>Username: <span className="font-mono">{createdCreds.username}</span></p>
               <p>Password: <span className="font-mono">{createdCreds.tempPassword}</span></p>
             </div>
@@ -178,7 +178,7 @@ function AddMemberModal({
 
   return (
     <ModalBackdrop onClose={onClose}>
-      <div className="bg-white rounded-card p-6 max-w-xs w-full">
+      <div className="glass rounded-card p-6 max-w-xs w-full">
         <h2 className="font-display font-semibold mb-4">Add team member</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
@@ -248,7 +248,7 @@ function ResetPasswordModal({
 
   return (
     <ModalBackdrop onClose={onClose}>
-      <div className="bg-white rounded-card p-6 max-w-xs w-full">
+      <div className="glass rounded-card p-6 max-w-xs w-full">
         <h2 className="font-display font-semibold mb-2">Reset password?</h2>
         <p className="text-xs text-ink-900/60 mb-4">
           This replaces the current password for <span className="font-semibold">{member.full_name}</span> with a

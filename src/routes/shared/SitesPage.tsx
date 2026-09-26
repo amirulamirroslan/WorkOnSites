@@ -73,7 +73,7 @@ export default function SitesPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
+      <div className="glass rounded-card">
         {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && sites.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No sites yet — add your first one.</p>
@@ -166,7 +166,7 @@ function AddSiteModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
 
   return (
     <ModalBackdrop onClose={onClose}>
-      <div className="bg-white rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
+      <div className="glass rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
         <h2 className="font-display font-semibold mb-4">Add site</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
@@ -278,7 +278,7 @@ function ManageSiteModal({
 
   return (
     <ModalBackdrop onClose={onClose}>
-      <div className="bg-white rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
+      <div className="glass rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
         <h2 className="font-display font-semibold mb-1">{site.name}</h2>
         <p className="text-xs text-ink-900/50 mb-4">Assign workers &amp; team leaders to this site</p>
 

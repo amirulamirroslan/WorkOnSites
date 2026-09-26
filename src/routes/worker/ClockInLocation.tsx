@@ -96,7 +96,7 @@ export default function ClockInLocation() {
         <StepTracker current={0} />
         <h2 className="font-display font-semibold text-lg mt-6 mb-1">Choose a Site</h2>
         <p className="text-ink-900/50 text-sm mb-4">You're assigned to more than one site — which one are you at?</p>
-        <div className="card divide-y divide-cloud-100">
+        <div className="card divide-y divide-white/50">
           {assignedSites.map((s) => (
             <button
               key={s.id}
@@ -217,7 +217,7 @@ export default function ClockInLocation() {
                 onChange={(e) => setOverrideReason(e.target.value)}
                 rows={2}
                 placeholder="Reason (e.g. GPS drift, site boundary is wider than mapped)…"
-                className="w-full rounded-xl bg-cloud-50 border border-cloud-100 p-3 text-sm text-ink-900 placeholder-ink-900/30 resize-none outline-none focus:border-brand"
+                className="w-full rounded-xl input-light resize-none"
               />
               <button
                 className="w-full rounded-xl bg-warning-500 text-white px-4 py-2.5 text-sm font-semibold disabled:opacity-40"

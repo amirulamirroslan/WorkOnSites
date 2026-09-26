@@ -109,7 +109,7 @@ export default function ReportsPage() {
             key={p}
             onClick={() => setPeriod(p)}
             className={`text-xs font-medium px-3 py-2 rounded-lg capitalize ${
-              period === p ? "bg-brand text-white" : "bg-white border border-cloud-100 shadow-soft text-ink-900/60"
+              period === p ? "bg-brand text-white" : "glass text-ink-900/60"
             }`}
           >
             {p}

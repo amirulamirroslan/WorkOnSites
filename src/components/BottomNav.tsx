@@ -14,7 +14,7 @@ export default function BottomNav() {
   const activeIndex = items.findIndex((i) => (i.to === "/worker" ? pathname === i.to : pathname.startsWith(i.to)));
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full md:max-w-2xl lg:hidden bg-white rounded-t-3xl shadow-[0_-6px_24px_rgba(10,42,94,0.12)] flex justify-around pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] z-40">
+    <nav className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1.5rem)] md:max-w-md lg:hidden glass rounded-[28px] flex justify-around pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] z-40">
       {items.map(({ to, label, Icon }, i) => (
         <NavLink
           key={to}

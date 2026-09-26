@@ -62,7 +62,7 @@ export default function TaskList() {
             key={t.id}
             onClick={() => setFilter(t.id)}
             className={`relative text-xs font-semibold px-3.5 py-2 rounded-pill transition-colors ${
-              filter === t.id ? "text-white" : "bg-white text-ink-900/60 border border-cloud-100"
+              filter === t.id ? "text-white" : "glass text-ink-900/60"
             }`}
           >
             {filter === t.id && (
@@ -79,7 +79,7 @@ export default function TaskList() {
 
       {visible.length === 0 && <p className="text-ink-900/40 text-sm py-6 text-center">No tasks here.</p>}
       {visible.length > 0 && (
-        <StaggerList className="card divide-y divide-cloud-100">
+        <StaggerList className="card divide-y divide-white/50">
           <AnimatePresence>
             {visible.map((task) => (
               <StaggerItem key={task.id}>

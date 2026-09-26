@@ -52,9 +52,7 @@ export default function AuthShell({
       <div className="relative z-10 flex-1 flex flex-col w-full max-w-md md:max-w-lg mx-auto">
         <div
           className={`flex-1 flex flex-col px-8 pt-16 pb-10 md:flex-none md:my-auto ${
-            panel
-              ? "md:bg-navy-900/70 md:backdrop-blur md:border md:border-white/10 md:rounded-3xl md:px-10 md:py-10 md:shadow-2xl"
-              : ""
+            panel ? "md:glass-dark md:rounded-3xl md:px-10 md:py-10" : ""
           }`}
         >
           {children}

@@ -59,7 +59,7 @@ export default function ClockInFace() {
         <StepTracker current={1} dark />
       </div>
 
-      <div className="relative flex-1 min-h-[280px] rounded-3xl bg-navy-900 overflow-hidden flex items-center justify-center mt-6 mb-5 border border-white/10">
+      <div className="relative flex-1 min-h-[280px] rounded-3xl bg-navy-900/60 backdrop-blur-md overflow-hidden flex items-center justify-center mt-6 mb-5 border border-white/15">
         {ready && !cameraError ? (
           <video ref={videoRef} className="absolute inset-0 w-full h-full object-cover scale-x-[-1]" muted playsInline />
         ) : ready && cameraError ? (
@@ -76,7 +76,7 @@ export default function ClockInFace() {
         )}
         {ready && !cameraError && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[62%] aspect-[3/4] rounded-[50%] border-2 border-brand-light/80 shadow-[0_0_0_999px_rgba(4,18,46,0.35)]" />
+            <div className="w-[62%] aspect-[3/4] rounded-[50%] border-2 border-brand-light/90 shadow-[0_0_0_999px_rgba(10,6,24,0.35)]" />
           </div>
         )}
       </div>

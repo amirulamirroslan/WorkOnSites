@@ -61,13 +61,13 @@ export default function TaskChecklist() {
       }
     >
       <p className="font-display font-semibold mb-3">Checklist</p>
-      <StaggerList className="card divide-y divide-cloud-100 mb-6">
+      <StaggerList className="card divide-y divide-white/50 mb-6">
         {task.checklist.map((item) => (
           <StaggerItem key={item.id}>
             <label className="flex items-center gap-3 px-4 py-3.5">
               <motion.span
                 whileTap={{ scale: 0.85 }}
-                animate={{ backgroundColor: item.isCompleted ? "#1A6BFF" : "rgba(0,0,0,0)" }}
+                animate={{ backgroundColor: item.isCompleted ? "#6C5CE7" : "rgba(0,0,0,0)" }}
                 transition={{ duration: 0.18 }}
                 className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 ${
                   item.isCompleted ? "border-brand" : "border-ink-900/20"

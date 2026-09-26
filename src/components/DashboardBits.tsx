@@ -11,7 +11,7 @@ export function greeting() {
 
 export function DateChip() {
   const d = new Date().toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
-  return <span className="text-xs font-medium bg-white border border-cloud-100 rounded-pill px-3.5 py-2 text-ink-900/70 shadow-soft">{d}</span>;
+  return <span className="text-xs font-medium glass rounded-pill px-3.5 py-2 text-ink-900/70">{d}</span>;
 }
 
 const tones = {

@@ -81,7 +81,7 @@ export default function CameraCapture({
         : "Location unavailable";
 
     const barHeight = Math.max(48, Math.round(canvas.height * 0.1));
-    ctx.fillStyle = "rgba(4, 18, 46, 0.72)";
+    ctx.fillStyle = "rgba(10, 6, 24, 0.72)";
     ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
 
     const pad = Math.round(canvas.width * 0.035);
@@ -122,7 +122,7 @@ export default function CameraCapture({
 
   return (
     <>
-      <div className="relative flex-1 min-h-[280px] rounded-3xl bg-navy-900 overflow-hidden flex items-center justify-center mt-6 mb-5 border border-white/10">
+      <div className="relative flex-1 min-h-[280px] rounded-3xl bg-navy-900/60 backdrop-blur-md overflow-hidden flex items-center justify-center mt-6 mb-5 border border-white/15">
         {phase === "starting" && (
           <p className="text-white/60 text-sm text-center px-8">Opening camera…</p>
         )}
@@ -150,7 +150,7 @@ export default function CameraCapture({
 
         {phase === "live" && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[62%] aspect-[3/4] rounded-[50%] border-2 border-brand-light/80 shadow-[0_0_0_999px_rgba(4,18,46,0.35)]" />
+            <div className="w-[62%] aspect-[3/4] rounded-[50%] border-2 border-brand-light/90 shadow-[0_0_0_999px_rgba(10,6,24,0.35)]" />
           </div>
         )}
       </div>
@@ -180,7 +180,7 @@ export default function CameraCapture({
       {phase === "preview" && (
         <div className="flex items-center gap-3">
           <button
-            className="flex-1 rounded-2xl bg-white/10 border border-white/15 text-white px-4 py-3.5 font-display text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+            className="flex-1 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white px-4 py-3.5 font-display text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             onClick={retake}
           >
             <RotateCcw size={16} /> Retake

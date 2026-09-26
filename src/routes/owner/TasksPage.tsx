@@ -168,7 +168,7 @@ function CreateTaskModal({ onClose, onCreated }: { onClose: () => void; onCreate
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
-      <div className="bg-white rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
+      <div className="glass rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
         <h2 className="font-display font-semibold mb-4">Assign task</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input

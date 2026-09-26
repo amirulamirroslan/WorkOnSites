@@ -151,12 +151,12 @@ export default function WorkerHome() {
             View all
           </button>
         </div>
-        <StaggerList className="card divide-y divide-cloud-100">
+        <StaggerList className="card divide-y divide-white/50">
           {tasks.length === 0 && <p className="text-ink-900/40 text-sm px-4 py-4">No tasks assigned for today.</p>}
           {tasks.slice(0, 5).map((task) => (
             <StaggerItem key={task.id}>
               <motion.button
-                whileTap={{ backgroundColor: "rgba(26,107,255,0.05)" }}
+                whileTap={{ backgroundColor: "rgba(108,92,231,0.08)" }}
                 onClick={() => navigate(`/worker/tasks/${task.id}`)}
                 className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
               >

@@ -26,16 +26,16 @@ export default function Skyline({
     >
       <defs>
         <linearGradient id={fill} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#6FA8FF" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#1A4FB8" stopOpacity="0.15" />
+          <stop offset="0" stopColor="#a78bfa" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#4A38D6" stopOpacity="0.15" />
         </linearGradient>
         <linearGradient id={back} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#3F7BE8" stopOpacity="0.30" />
-          <stop offset="1" stopColor="#123A7A" stopOpacity="0.05" />
+          <stop offset="0" stopColor="#6C5CE7" stopOpacity="0.30" />
+          <stop offset="1" stopColor="#3B2280" stopOpacity="0.05" />
         </linearGradient>
         <radialGradient id={glow} cx="0.5" cy="0.6" r="0.6">
-          <stop offset="0" stopColor="#3F8CFF" stopOpacity="0.35" />
-          <stop offset="1" stopColor="#3F8CFF" stopOpacity="0" />
+          <stop offset="0" stopColor="#8b7bff" stopOpacity="0.35" />
+          <stop offset="1" stopColor="#8b7bff" stopOpacity="0" />
         </radialGradient>
       </defs>
       <rect width="400" height="220" fill={`url(#${glow})`} />
@@ -58,7 +58,7 @@ export default function Skyline({
         <path d="M201 220V96l5-16 4-24 5-30 5 30 4 24 5 16v124z" />
         <rect x="167" y="118" width="34" height="8" />
       </g>
-      <g stroke="#9CC4FF" strokeOpacity="0.35" strokeWidth="1">
+      <g stroke="#c4b5fd" strokeOpacity="0.35" strokeWidth="1">
         <path d="M151 4v22M215 4v22" />
       </g>
 

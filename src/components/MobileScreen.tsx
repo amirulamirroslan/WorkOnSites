@@ -27,13 +27,13 @@ export default function MobileScreen({
 }) {
   if (navSpace) {
     return (
-      <div className="min-h-screen bg-navy-950 lg:bg-cloud-50">
-        <div className="mobile-bg lg:bg-none text-white min-h-screen flex flex-col md:max-w-2xl md:mx-auto lg:max-w-6xl lg:min-h-0 lg:px-8 lg:pt-8 lg:pb-10">
+      <div className="min-h-screen mobile-bg lg:surface-light">
+        <div className="text-white min-h-screen flex flex-col md:max-w-2xl md:mx-auto lg:max-w-6xl lg:min-h-0 lg:px-8 lg:pt-8 lg:pb-10">
           <motion.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="px-5 pt-10 pb-7 lg:mobile-bg lg:rounded-2xl lg:px-8 lg:py-8 lg:shadow-soft"
+            className="px-5 pt-10 pb-7 lg:glass-dark lg:rounded-2xl lg:px-8 lg:py-8"
           >
             {header}
           </motion.div>
@@ -41,7 +41,7 @@ export default function MobileScreen({
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.06, ease: EASE }}
-            className={`flex-1 bg-cloud-50 text-ink-900 rounded-t-xl2 px-5 pt-6 pb-28 lg:flex-none lg:bg-transparent lg:rounded-none lg:px-0 lg:pt-6 lg:pb-0 ${
+            className={`flex-1 glass text-ink-900 rounded-t-xl2 lg:rounded-2xl px-5 pt-6 pb-28 lg:mt-6 lg:flex-none lg:px-6 lg:pt-6 lg:pb-6 ${
               wide ? "" : "lg:max-w-3xl"
             } ${sheetClassName}`}
           >
@@ -55,7 +55,7 @@ export default function MobileScreen({
   return (
     <StandaloneFrame>
       <div className="px-5 pt-10 pb-7 md:px-8">{header}</div>
-      <div className={`flex-1 bg-cloud-50 text-ink-900 rounded-t-xl2 px-5 pt-6 pb-8 md:px-8 ${sheetClassName}`}>{children}</div>
+      <div className={`flex-1 glass text-ink-900 rounded-t-xl2 px-5 pt-6 pb-8 md:px-8 ${sheetClassName}`}>{children}</div>
     </StandaloneFrame>
   );
 }
@@ -63,12 +63,12 @@ export default function MobileScreen({
 // Centred "card" frame for standalone flows on a laptop; edge-to-edge on phones.
 function StandaloneFrame({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className="bg-navy-950 md:mobile-bg min-h-screen md:flex md:items-center md:justify-center md:py-8">
+    <div className="mobile-bg min-h-screen md:flex md:items-center md:justify-center md:py-8">
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.32, ease: EASE }}
-        className={`mobile-bg text-white min-h-screen flex flex-col w-full md:max-w-xl md:min-h-[640px] md:rounded-3xl md:overflow-hidden md:shadow-2xl md:border md:border-white/10 ${className}`}
+        className={`text-white min-h-screen flex flex-col w-full md:max-w-xl md:min-h-[640px] md:rounded-3xl md:overflow-hidden md:glass-dark ${className}`}
       >
         {children}
       </motion.div>

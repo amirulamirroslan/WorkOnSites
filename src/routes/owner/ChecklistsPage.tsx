@@ -102,7 +102,7 @@ function CreateTemplateModal({ onClose, onCreated }: { onClose: () => void; onCr
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
-      <div className="bg-white rounded-card p-6 max-w-sm w-full">
+      <div className="glass rounded-card p-6 max-w-sm w-full">
         <h2 className="font-display font-semibold mb-4">New checklist template</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
@@ -172,7 +172,7 @@ function EditTemplateModal({ template, onClose }: { template: Template; onClose:
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
-      <div className="bg-white rounded-card p-6 max-w-sm w-full max-h-[85vh] overflow-y-auto">
+      <div className="glass rounded-card p-6 max-w-sm w-full max-h-[85vh] overflow-y-auto">
         <h2 className="font-display font-semibold mb-4">{template.name}</h2>
 
         {loading && <p className="text-sm text-ink-900/50">Loading…</p>}

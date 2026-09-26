@@ -6,7 +6,17 @@
   html {
     font-family: "Inter", sans-serif;
     font-feature-settings: "tnum" 1, "lnum" 1; /* tabular numerals for stat displays */
-    background: #04122e;
+    /* Aurora mesh — the one backdrop the whole app lives on. Every glass
+       surface is a translucent pane floating over this, so light and dark
+       panels alike pick up the same colour bleed. */
+    background-color: #0a0618;
+    background-image:
+      radial-gradient(45% 55% at 8% 8%, rgba(108, 92, 231, 0.55), transparent 60%),
+      radial-gradient(45% 55% at 95% 12%, rgba(34, 211, 238, 0.35), transparent 60%),
+      radial-gradient(60% 60% at 45% 100%, rgba(244, 114, 182, 0.28), transparent 65%);
+    background-attachment: fixed;
+    background-size: 200% 200%, 200% 200%, 200% 200%;
+    animation: aurora 24s ease-in-out infinite;
   }
   h1, h2, h3, .display {
     font-family: "Inter Tight", "Inter", sans-serif;
@@ -15,25 +25,56 @@
 }
 
 @layer components {
-  /* Deep-navy gradient used behind every worker (mobile) screen header,
-     the splash/login, and the desktop sidebar. */
+  /* Vivid aurora gradient used behind every worker (mobile) screen header,
+     the splash/login, and the desktop sidebar — the "hero" glass backdrop. */
   .mobile-bg {
-    background: radial-gradient(120% 60% at 50% 0%, #123a7a 0%, #0a2a5e 35%, #061b45 100%);
+    background: radial-gradient(130% 70% at 15% -10%, #8b7bff 0%, #6c5ce7 30%, #2d1b6b 62%, #0a0618 100%),
+      radial-gradient(90% 60% at 100% 110%, rgba(34, 211, 238, 0.35), transparent 60%);
+    background-blend-mode: screen, normal;
   }
 
-  /* Kept for any page not yet migrated — same navy look as .mobile-bg. */
+  /* Kept for any page not yet migrated — same aurora look as .mobile-bg. */
   .surface-dark {
     @apply mobile-bg text-white;
   }
 
-  /* Desktop light surface (Team Leader / Owner) */
+  /* Desktop backdrop (Team Leader / Owner) — a soft pastel-aurora mesh that
+     light glass panels float on top of. */
   .surface-light {
-    @apply bg-cloud-50 text-ink-900;
+    @apply text-ink-900;
+    background-color: #f4f1ff;
+    background-image:
+      radial-gradient(40% 50% at 0% 0%, rgba(108, 92, 231, 0.16), transparent 65%),
+      radial-gradient(35% 45% at 100% 0%, rgba(34, 211, 238, 0.14), transparent 65%),
+      radial-gradient(45% 50% at 50% 100%, rgba(244, 114, 182, 0.10), transparent 65%);
+    background-attachment: fixed;
   }
 
-  /* White elevated card used on light surfaces / sheets */
+  /* Frosted light-glass card — the workhorse surface used almost everywhere
+     (stat cards, panels, list containers, modals). */
   .card {
-    @apply bg-white rounded-2xl border border-cloud-100 shadow-soft transition-shadow duration-300;
+    @apply relative rounded-2xl border border-white/60 shadow-glass transition-shadow duration-300;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Bare glass fill/border/shadow with no radius baked in — drop-in
+     replacement for one-off `bg-white` surfaces so the caller's own
+     rounded-* utility still applies. */
+  .glass {
+    @apply relative border border-white/60 shadow-glass;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Frosted dark-glass — for panes sitting on the aurora / navy backdrop. */
+  .glass-dark {
+    @apply relative border border-white/15 shadow-glass-dark text-white;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   /* Shimmering placeholder for loading states (Skeleton in Motion.tsx) */
@@ -42,14 +83,21 @@
   }
   .skeleton-shimmer::after {
     content: "";
-    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer;
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/70 to-transparent animate-shimmer;
+  }
+  .skeleton {
+    @apply skeleton-shimmer bg-brand-50/80;
   }
 
-  /* Primary action button — gradient fill, lifts on hover (desktop), settles
-     on tap. The spring-ish cubic-bezier is EASE from Motion.tsx, mirrored
-     here so plain-CSS buttons feel like the framer-driven ones. */
+  /* Primary action button — aurora gradient fill with a glassy top sheen,
+     lifts on hover (desktop), settles on tap. */
   .action-band {
-    @apply w-full rounded-2xl bg-gradient-to-br from-brand-light via-brand to-brand-dark bg-[length:160%_160%] bg-left text-white px-6 py-4 font-display text-base font-semibold shadow-glow transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96] active:shadow-none;
+    @apply relative w-full rounded-2xl bg-gradient-to-br from-brand-light via-brand to-brand-dark bg-[length:160%_160%] bg-left text-white px-6 py-4 font-display text-base font-semibold shadow-glow transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96] active:shadow-none overflow-hidden;
+  }
+  .action-band::before {
+    content: "";
+    @apply absolute inset-x-0 top-0 h-1/2 rounded-t-2xl pointer-events-none;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.35), transparent);
   }
   @media (hover: hover) {
     .action-band:hover {
@@ -57,28 +105,33 @@
     }
   }
 
-  /* Secondary (light) button for dark backgrounds — e.g. Sign Up */
+  /* Secondary (glass) button for dark backgrounds — e.g. Sign Up */
   .action-light {
-    @apply w-full rounded-2xl bg-white/90 text-navy-800 px-6 py-4 font-display text-base font-semibold transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96];
+    @apply w-full rounded-2xl bg-white/15 border border-white/25 text-white px-6 py-4 font-display text-base font-semibold backdrop-blur-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96];
   }
   @media (hover: hover) {
     .action-light:hover {
-      @apply bg-white -translate-y-0.5 shadow-lift;
+      @apply bg-white/25 -translate-y-0.5 shadow-lift;
     }
   }
 
   /* Text input for dark backgrounds (login / register) */
   .input-dark {
-    @apply w-full rounded-2xl bg-white/10 border border-white/15 px-4 py-3.5 text-sm text-white placeholder-white/40 outline-none focus:border-brand-light transition-colors;
+    @apply w-full rounded-2xl bg-white/10 border border-white/15 backdrop-blur-xl px-4 py-3.5 text-sm text-white placeholder-white/40 outline-none focus:border-brand-light focus:bg-white/[0.14] transition-colors;
+  }
+
+  /* Text input on light glass surfaces (forms inside cards) */
+  .input-light {
+    @apply w-full rounded-2xl bg-white/50 border border-white/70 backdrop-blur-md px-4 py-3.5 text-sm text-ink-900 placeholder-ink-900/30 outline-none focus:border-brand transition-colors;
   }
 
   /* Compact list row for lead/owner surfaces — avoids card-per-item overuse */
   .list-row {
-    @apply flex items-center justify-between py-3 border-b border-cloud-100 last:border-0 transition-colors duration-150;
+    @apply flex items-center justify-between py-3 border-b border-white/40 last:border-0 transition-colors duration-150;
   }
   @media (hover: hover) {
     .list-row:hover {
-      @apply bg-cloud-50/70 -mx-2 px-2 rounded-xl;
+      @apply bg-white/40 -mx-2 px-2 rounded-xl;
     }
   }
 }
@@ -94,6 +147,93 @@
     -webkit-mask-image: none;
     mask-image: none;
   }
+}
+
+/* ---- Animated logo (halo pings + gloss sweep) ---- */
+.logo-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-mark__halo {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(167, 139, 250, 0.55);
+  animation: haloping 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.logo-mark__halo--late {
+  animation-delay: 1.3s;
+}
+.logo-mark__face {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.logo-mark__face--glow {
+  box-shadow: 0 0 24px 4px rgba(167, 139, 250, 0.45);
+}
+.logo-mark__shine {
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(75deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: logo-sweep 3.6s ease-in-out infinite;
+}
+@keyframes logo-sweep {
+  0% { left: -60%; }
+  35%, 100% { left: 140%; }
+}
+.logo-breathe {
+  display: inline-flex;
+  animation: floaty 3.6s ease-in-out infinite;
+}
+
+/* ---- Full-screen loader spinner + fade-in ---- */
+.orbit-spin {
+  animation: spin 1.1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.load-reveal {
+  opacity: 0;
+  animation: load-reveal 0.35s ease-out 0.2s forwards;
+}
+@keyframes load-reveal {
+  to { opacity: 1; }
+}
+
+/* ---- Success badge (clock-in / clock-out confirmation) ---- */
+.success-burst {
+  animation: success-burst 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.success-burst--late {
+  animation-delay: 0.5s;
+}
+@keyframes success-burst {
+  0% { transform: scale(0.75); opacity: 0.55; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.success-pop {
+  animation: success-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes success-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.check-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: check-draw 0.4s ease-out 0.25s forwards;
+}
+@keyframes check-draw {
+  to { stroke-dashoffset: 0; }
 }
 
 /* Respect the OS-level reduced-motion preference: collapse framer's inline

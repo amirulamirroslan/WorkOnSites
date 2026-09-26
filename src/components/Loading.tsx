@@ -31,7 +31,7 @@ export function LoadingScreen() {
             cx="66"
             cy="66"
             r="62"
-            stroke="#4C9BFF"
+            stroke="#A78BFA"
             strokeWidth="3"
             strokeLinecap="round"
             strokeDasharray="110 280"
