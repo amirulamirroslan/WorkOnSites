@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { StaggerItem, StaggerList } from "../../components/Motion";
 
 type Template = { id: string; name: string; version: number };
 type TemplateItem = { id: string; label: string; sort_order: number; requires_photo: boolean; is_required: boolean };
@@ -38,18 +40,26 @@ export default function ChecklistsPage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
+      <div className="card">
         {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && templates.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No templates yet.</p>}
-        {templates.map((t) => (
-          <div key={t.id} className="list-row px-4">
-            <div>
-              <p className="font-medium text-sm">{t.name}</p>
-              <p className="text-xs text-ink-900/50">v{t.version} · {itemCounts[t.id] ?? 0} items</p>
-            </div>
-            <button onClick={() => setEditTemplate(t)} className="text-xs text-brand underline">Edit</button>
-          </div>
-        ))}
+        {!loading && templates.length > 0 && (
+          <StaggerList>
+            <AnimatePresence>
+              {templates.map((t) => (
+                <StaggerItem key={t.id}>
+                  <div className="list-row px-4">
+                    <div>
+                      <p className="font-medium text-sm">{t.name}</p>
+                      <p className="text-xs text-ink-900/50">v{t.version} · {itemCounts[t.id] ?? 0} items</p>
+                    </div>
+                    <button onClick={() => setEditTemplate(t)} className="text-xs text-brand underline">Edit</button>
+                  </div>
+                </StaggerItem>
+              ))}
+            </AnimatePresence>
+          </StaggerList>
+        )}
       </div>
 
       {showCreate && (

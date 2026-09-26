@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { StatCard } from "../../components/DashboardBits";
+import { AnimatedBar, StaggerItem, StaggerList } from "../../components/Motion";
 
 type Period = "daily" | "weekly" | "monthly";
 
@@ -120,32 +122,36 @@ export default function ReportsPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-white rounded-card border border-cloud-100 shadow-soft p-4">
-              <p className="font-display text-xl font-bold">{attendanceRate}%</p>
-              <p className="text-xs text-ink-900/50">Attendance rate ({label})</p>
-            </div>
-            <div className="bg-white rounded-card border border-cloud-100 shadow-soft p-4">
-              <p className="font-display text-xl font-bold">{taskCompletionRate === null ? "—" : `${taskCompletionRate}%`}</p>
-              <p className="text-xs text-ink-900/50">
-                {taskCompletionRate === null ? "No tasks scheduled in this period" : `Task completion (${label})`}
-              </p>
-            </div>
+            <StatCard index={0} label={`Attendance rate (${label})`} value={`${attendanceRate}%`} />
+            <StatCard
+              index={1}
+              label={taskCompletionRate === null ? "No tasks scheduled in this period" : `Task completion (${label})`}
+              value={taskCompletionRate === null ? "—" : `${taskCompletionRate}%`}
+            />
           </div>
 
           <p className="text-sm font-medium text-ink-900/60 mb-2">Site attendance ({label})</p>
-          <div className="bg-white rounded-card border border-cloud-100 shadow-soft p-4 space-y-3">
+          <div className="card p-4">
             {perSite.length === 0 && <p className="text-sm text-ink-900/50">No sites yet.</p>}
-            {perSite.map((s) => (
-              <div key={s.site}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-ink-900/70">{s.site}</span>
-                  <span className="text-ink-900/50">{s.count} worker{s.count === 1 ? "" : "s"}</span>
-                </div>
-                <div className="h-1.5 rounded-pill bg-black/5">
-                  <div className="h-1.5 rounded-pill bg-brand" style={{ width: `${(s.count / maxSiteCount) * 100}%` }} />
-                </div>
-              </div>
-            ))}
+            {perSite.length > 0 && (
+              <StaggerList className="space-y-3">
+                {perSite.map((s) => (
+                  <StaggerItem key={s.site}>
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-ink-900/70">{s.site}</span>
+                        <span className="text-ink-900/50">{s.count} worker{s.count === 1 ? "" : "s"}</span>
+                      </div>
+                      <AnimatedBar
+                        percent={(s.count / maxSiteCount) * 100}
+                        color="bg-brand"
+                        className="h-1.5 rounded-pill bg-black/5 overflow-hidden"
+                      />
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerList>
+            )}
           </div>
         </>
       )}

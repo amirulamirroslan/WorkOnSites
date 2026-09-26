@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { StaggerItem, StaggerList } from "../../components/Motion";
 
 type EventRow = {
   id: string;
@@ -103,36 +105,44 @@ export default function AttendancePage() {
   return (
     <div>
       <h1 className="font-display text-xl font-semibold mb-6">Attendance</h1>
-      <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
+      <div className="card">
         {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && shifts.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No attendance recorded yet.</p>}
-        {shifts.map((a) => (
-          <div key={a.eventId} className="list-row px-4">
-            <div>
-              <p className="font-medium text-sm">{a.workerName}</p>
-              <p className="text-xs text-ink-900/50">
-                {a.siteName} · In {a.clockIn} {a.clockOut ? `· Out ${a.clockOut}` : "· Still on site"}
-              </p>
-              {a.overrideReason && (
-                <p className="text-xs text-warning-500 mt-0.5">
-                  "{a.overrideReason}" {a.overrideBy && <span className="text-success-500">· Reviewed</span>}
-                </p>
-              )}
-            </div>
-            <div className="text-right shrink-0">
-              <span className={`text-xs ${statusStyle[a.status]}`}>{statusLabel[a.status]}</span>
-              {a.status === "exception_override" && !a.overrideBy && (
-                <button
-                  onClick={() => approveOverride(a.eventId)}
-                  disabled={approving === a.eventId}
-                  className="block text-xs text-brand underline mt-1 disabled:opacity-40"
-                >
-                  {approving === a.eventId ? "Approving…" : "Approve"}
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
+        {!loading && shifts.length > 0 && (
+          <StaggerList>
+            <AnimatePresence>
+              {shifts.map((a) => (
+                <StaggerItem key={a.eventId}>
+                  <div className="list-row px-4">
+                    <div>
+                      <p className="font-medium text-sm">{a.workerName}</p>
+                      <p className="text-xs text-ink-900/50">
+                        {a.siteName} · In {a.clockIn} {a.clockOut ? `· Out ${a.clockOut}` : "· Still on site"}
+                      </p>
+                      {a.overrideReason && (
+                        <p className="text-xs text-warning-500 mt-0.5">
+                          "{a.overrideReason}" {a.overrideBy && <span className="text-success-500">· Reviewed</span>}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className={`text-xs ${statusStyle[a.status]}`}>{statusLabel[a.status]}</span>
+                      {a.status === "exception_override" && !a.overrideBy && (
+                        <button
+                          onClick={() => approveOverride(a.eventId)}
+                          disabled={approving === a.eventId}
+                          className="block text-xs text-brand underline mt-1 disabled:opacity-40"
+                        >
+                          {approving === a.eventId ? "Approving…" : "Approve"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </AnimatePresence>
+          </StaggerList>
+        )}
       </div>
     </div>
   );
