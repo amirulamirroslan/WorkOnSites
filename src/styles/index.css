@@ -69,10 +69,13 @@
     -webkit-backdrop-filter: blur(20px);
   }
 
-  /* Frosted dark-glass — for panes sitting on the aurora / navy backdrop. */
+  /* Frosted dark-glass — for panes that need to read as dark regardless of
+     what's behind them (mobile aurora header, but also the desktop sidebar
+     which sits on the LIGHT surface — a white-tinted glass would just
+     wash out there, so this carries its own dark violet-black base). */
   .glass-dark {
     @apply relative border border-white/15 shadow-glass-dark text-white;
-    background: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(165deg, rgba(37, 19, 84, 0.92), rgba(10, 6, 24, 0.92));
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
@@ -131,7 +134,7 @@
   }
   @media (hover: hover) {
     .list-row:hover {
-      @apply bg-white/40 -mx-2 px-2 rounded-xl;
+      @apply bg-white/40 rounded-xl;
     }
   }
 }
