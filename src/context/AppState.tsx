@@ -16,6 +16,13 @@ export type PendingClockIn = {
   overrideReason: string | null;
 };
 
+export type PendingClockOut = {
+  photoBlob: Blob | null;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy: number | null;
+};
+
 type AppStateValue = {
   tasks: Task[];
   tasksLoading: boolean;
@@ -28,6 +35,8 @@ type AppStateValue = {
   setClockInTime: (t: string | null) => void;
   pendingClockIn: PendingClockIn | null;
   setPendingClockIn: (p: PendingClockIn | null) => void;
+  pendingClockOut: PendingClockOut | null;
+  setPendingClockOut: (p: PendingClockOut | null) => void;
 };
 
 const AppStateContext = createContext<AppStateValue | null>(null);
@@ -39,6 +48,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [clockStatus, setClockStatus] = useState<ClockStatus>("clocked_out");
   const [clockInTime, setClockInTime] = useState<string | null>(null);
   const [pendingClockIn, setPendingClockIn] = useState<PendingClockIn | null>(null);
+  const [pendingClockOut, setPendingClockOut] = useState<PendingClockOut | null>(null);
 
   const refreshTasks = useCallback(async () => {
     if (!profile) {
@@ -94,6 +104,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         setClockInTime,
         pendingClockIn,
         setPendingClockIn,
+        pendingClockOut,
+        setPendingClockOut,
       }}
     >
       {children}

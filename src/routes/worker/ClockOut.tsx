@@ -24,7 +24,7 @@ export function ClockOutConfirm() {
         <div className="flex justify-between"><span className="text-ink-900/60">Clocked in</span><span className="font-semibold">{clockInTime ?? "—"}</span></div>
       </div>
 
-      <button className="action-band" onClick={() => navigate("/worker/clock-out/success")}>
+      <button className="action-band" onClick={() => navigate("/worker/clock-out/face")}>
         Clock Out
       </button>
     </MobileScreen>
@@ -34,29 +34,38 @@ export function ClockOutConfirm() {
 export function ClockOutSuccess() {
   const navigate = useNavigate();
   const { profile } = useAuth();
-  const { pendingClockIn, setClockStatus, clockInTime } = useAppState();
+  const { pendingClockIn, pendingClockOut, setClockStatus, clockInTime } = useAppState();
   const [status, setStatus] = useState<"saving" | "recorded" | "queued_offline" | "error">("saving");
   const [time] = useState(() => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
 
   useEffect(() => {
     async function run() {
       // Clock-out reuses the site captured at clock-in (same shift, same
-      // site) — only the position needs re-checking, since GPS can move.
+      // site). Position/photo come from the ClockOutFace step; if GPS
+      // failed there, re-check it now rather than losing the clock-out.
       if (!profile || !pendingClockIn) {
         setStatus("error");
         return;
       }
       try {
-        const pos = await getCurrentPosition();
+        let latitude = pendingClockOut?.latitude ?? null;
+        let longitude = pendingClockOut?.longitude ?? null;
+        let accuracy = pendingClockOut?.accuracy ?? null;
+        if (latitude == null || longitude == null) {
+          const pos = await getCurrentPosition();
+          latitude = pos.coords.latitude;
+          longitude = pos.coords.longitude;
+          accuracy = pos.coords.accuracy ?? null;
+        }
         const result = await recordAttendanceEvent({
           organizationId: profile.organization_id,
           workerId: profile.id,
           site: pendingClockIn.site,
           eventType: "clock_out",
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy ?? null,
-          photoBlob: null,
+          latitude,
+          longitude,
+          accuracy,
+          photoBlob: pendingClockOut?.photoBlob ?? null,
         });
         setStatus(result.status);
       } catch {
