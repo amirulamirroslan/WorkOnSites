@@ -35,6 +35,15 @@ export default {
       boxShadow: {
         soft: "0 6px 24px rgba(10, 42, 94, 0.08)",
         glow: "0 10px 30px rgba(26, 107, 255, 0.35)",
+        lift: "0 14px 34px rgba(10, 42, 94, 0.14)",
+      },
+      keyframes: {
+        shimmer: { "100%": { transform: "translateX(100%)" } },
+        floaty: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
+      },
+      animation: {
+        shimmer: "shimmer 1.4s infinite",
+        floaty: "floaty 3.6s ease-in-out infinite",
       },
       fontSize: {
         xs: "12px",
@@ -48,18 +57,6 @@ export default {
         card: "20px",
         xl2: "28px",
         pill: "999px",
-      },
-      // `screen` (used by h-screen / min-h-screen everywhere) is 100vh by
-      // default, which is the *static* viewport height on phones — it
-      // doesn't track the browser chrome (address bar) hiding/showing or
-      // the window resizing (e.g. Android split-screen). Using the dynamic
-      // viewport unit here keeps every screen sized to what's actually
-      // visible instead of leaving a gap or clipping content after a resize.
-      height: {
-        screen: "100dvh",
-      },
-      minHeight: {
-        screen: "100dvh",
       },
     },
   },

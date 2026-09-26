@@ -1,18 +1,22 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronRight, LogOut } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import MobileScreen, { Avatar } from "../../components/MobileScreen";
-import { useAppState } from "../../context/AppState";
+import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 
 export default function WorkerProfile() {
   const navigate = useNavigate();
   const { signOut, profile } = useAuth();
-  const { site } = useAppState();
+  const [site, setSite] = useState<AssignedSite | null>(null);
   const name = profile?.full_name ?? "";
+
+  useEffect(() => {
+    if (profile) getMyAssignedSite(profile.id).then(setSite);
+  }, [profile]);
 
   return (
     <MobileScreen
-      wide
       header={
         <div className="flex items-center gap-4">
           <Avatar name={name} size={60} />
@@ -24,7 +28,7 @@ export default function WorkerProfile() {
       }
     >
       <div className="card divide-y divide-cloud-100 mb-6">
-        <button onClick={() => navigate("/worker/report-issue")} className="press-row w-full flex items-center justify-between px-4 py-4 text-left">
+        <button onClick={() => navigate("/worker/report-issue")} className="w-full flex items-center justify-between px-4 py-4 text-left">
           <span className="flex items-center gap-3 text-sm font-medium">
             <span className="w-8 h-8 rounded-full bg-brand-50 text-brand flex items-center justify-center">
               <AlertTriangle size={16} strokeWidth={2} />
@@ -41,7 +45,7 @@ export default function WorkerProfile() {
 
       <button
         onClick={signOut}
-        className="press w-full flex items-center justify-center gap-2 rounded-2xl bg-white border border-cloud-100 text-danger-500 px-6 py-3.5 font-display font-semibold shadow-soft"
+        className="w-full flex items-center justify-center gap-2 rounded-2xl bg-white border border-cloud-100 text-danger-500 px-6 py-3.5 font-display font-semibold shadow-soft"
       >
         <LogOut size={17} strokeWidth={2.2} />
         Sign Out

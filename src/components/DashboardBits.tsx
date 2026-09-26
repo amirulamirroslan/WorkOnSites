@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import { Avatar } from "./MobileScreen";
-import { useAnimatedNumber } from "../lib/useAnimatedNumber";
+import { AnimatedBar, CountUp, EASE } from "./Motion";
 
 export function greeting() {
   const h = new Date().getHours();
@@ -20,39 +21,32 @@ const tones = {
   danger: "bg-danger-500/10 text-danger-500",
 };
 
-// Counts the number inside a value like "94%" or "12" up from 0, keeping any
-// prefix/suffix. Anything it can't parse (e.g. "1,240") is shown as-is.
-function AnimatedValue({ value, delay }: { value: string; delay: number }) {
-  const m = value.match(/^(\D*?)(\d+(?:\.\d+)?)(\D*)$/);
-  const shown = useAnimatedNumber(m ? parseFloat(m[2]) : 0, { delay });
-  if (!m) return <>{value}</>;
-  const decimals = m[2].includes(".") ? m[2].split(".")[1].length : 0;
-  return (
-    <>
-      {m[1]}
-      {shown.toFixed(decimals)}
-      {m[3]}
-    </>
-  );
-}
-
 export function StatCard({
   label,
   value,
   Icon,
   tone = "brand",
   sub,
-  delay = 0,
+  index = 0,
 }: {
   label: string;
   value: string;
   Icon?: LucideIcon;
   tone?: keyof typeof tones;
   sub?: string;
-  delay?: number;
+  index?: number;
 }) {
+  // A number-only value (e.g. "18", "4") counts up; a value with a symbol
+  // (e.g. "94%", "8/12") is left as-is since CountUp only handles numerics.
+  const numeric = /^\d+$/.test(value);
   return (
-    <div className="card p-3.5 sm:p-5 flex items-center gap-3 sm:gap-4">
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.3, delay: index * 0.06, ease: EASE }}
+      whileHover={{ y: -2 }}
+      className="card p-3.5 sm:p-5 flex items-center gap-3 sm:gap-4"
+    >
       {Icon && (
         <span className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 ${tones[tone]}`}>
           <Icon size={20} />
@@ -60,44 +54,64 @@ export function StatCard({
       )}
       <div>
         <p className="font-display text-xl font-bold leading-none">
-          <AnimatedValue value={value} delay={delay} />
+          {numeric ? <CountUp value={parseInt(value, 10)} /> : value}
         </p>
         <p className="text-xs text-ink-900/50 mt-1.5">{label}</p>
         {sub && <p className="text-[11px] text-ink-900/40">{sub}</p>}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 export function Panel({ title, children, className = "" }: { title: string; children: ReactNode; className?: string }) {
   return (
-    <section className={`card p-5 ${className}`}>
+    <motion.section
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: EASE }}
+      className={`card p-5 ${className}`}
+    >
       <h2 className="font-display font-semibold mb-4">{title}</h2>
       {children}
-    </section>
+    </motion.section>
   );
 }
 
-export function BarRow({ label, percent, delay = 0 }: { label: string; percent: number; delay?: number }) {
+export function BarRow({ label, percent }: { label: string; percent: number }) {
   const color = percent >= 90 ? "bg-success-500" : "bg-brand";
-  // Bar and number share one eased value so they fill together.
-  const shown = useAnimatedNumber(percent, { duration: 900, delay });
   return (
     <div>
       <div className="flex justify-between text-xs mb-1.5">
         <span className="text-ink-900/70 font-medium">{label}</span>
-        <span className="text-ink-900/50 font-semibold">{Math.round(shown)}%</span>
+        <span className="text-ink-900/50 font-semibold">
+          <CountUp value={percent} suffix="%" />
+        </span>
       </div>
-      <div className="h-2 rounded-pill bg-cloud-100">
-        <div className={`h-2 rounded-pill ${color}`} style={{ width: `${shown}%` }} />
-      </div>
+      <AnimatedBar percent={percent} color={color} className="h-2 rounded-pill bg-cloud-100 overflow-hidden" />
     </div>
   );
 }
 
-export function PersonRow({ name, sub, right, online }: { name: string; sub: string; right: ReactNode; online?: boolean }) {
+export function PersonRow({
+  name,
+  sub,
+  right,
+  online,
+  index = 0,
+}: {
+  name: string;
+  sub: string;
+  right: ReactNode;
+  online?: boolean;
+  index?: number;
+}) {
   return (
-    <div className="list-row">
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.04, ease: EASE }}
+      className="list-row"
+    >
       <div className="flex items-center gap-3 min-w-0">
         <div className="relative">
           <Avatar name={name} size={36} />
@@ -111,6 +125,6 @@ export function PersonRow({ name, sub, right, online }: { name: string; sub: str
         </div>
       </div>
       <div className="text-xs text-ink-900/60 shrink-0">{right}</div>
-    </div>
+    </motion.div>
   );
 }

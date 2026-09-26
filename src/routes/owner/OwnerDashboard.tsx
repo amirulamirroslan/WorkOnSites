@@ -1,12 +1,10 @@
-import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { PageFade } from "../../components/Motion";
 import { CalendarCheck, ListChecks, MapPin, AlertTriangle } from "lucide-react";
-import { PageLoader } from "../../components/Loading";
 import NavRail from "../../components/NavRail";
 import Skyline from "../../components/Skyline";
 import { BarRow, DateChip, PersonRow, Panel, StatCard } from "../../components/DashboardBits";
 import { liveWorkers, sitePerformance, ownerKpis } from "../../lib/mockData";
-import AnimatedLogo from "../../components/AnimatedLogo";
 
 const navItems = [
   { to: "/owner", label: "Dashboard" },
@@ -22,16 +20,13 @@ const navItems = [
 ];
 
 export function OwnerLayout() {
-  const { pathname } = useLocation();
   return (
     <div className="surface-light lg:flex min-h-screen">
       <NavRail items={navItems} />
       <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
-        <div key={pathname} className="page-enter">
-          <Suspense fallback={<PageLoader />}>
-            <Outlet />
-          </Suspense>
-        </div>
+        <PageFade routeKey={useLocation().pathname}>
+          <Outlet />
+        </PageFade>
       </main>
     </div>
   );
@@ -49,24 +44,25 @@ export default function OwnerDashboard() {
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <StatCard label="Attendance" value={ownerKpis.attendance} Icon={CalendarCheck} tone="brand" delay={0} />
-        <StatCard label="Task Completion" value={ownerKpis.taskCompletion} Icon={ListChecks} tone="success" delay={70} />
-        <StatCard label="Sites Active" value={String(ownerKpis.sitesActive)} Icon={MapPin} tone="brand" delay={140} />
-        <StatCard label="High Priority Issues" value={String(ownerKpis.highPriorityIssues)} Icon={AlertTriangle} tone="danger" delay={210} />
+        <StatCard index={0} label="Attendance" value={ownerKpis.attendance} Icon={CalendarCheck} tone="brand" />
+        <StatCard index={1} label="Task Completion" value={ownerKpis.taskCompletion} Icon={ListChecks} tone="success" />
+        <StatCard index={2} label="Sites Active" value={String(ownerKpis.sitesActive)} Icon={MapPin} tone="brand" />
+        <StatCard index={3} label="High Priority Issues" value={String(ownerKpis.highPriorityIssues)} Icon={AlertTriangle} tone="danger" />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
         <Panel title="Site Performance">
           <div className="space-y-4">
-            {sitePerformance.map((s, i) => (
-              <BarRow key={s.site} label={s.site} percent={s.percent} delay={300 + i * 90} />
+            {sitePerformance.map((s) => (
+              <BarRow key={s.site} label={s.site} percent={s.percent} />
             ))}
           </div>
         </Panel>
         <Panel title="Live Workers">
-          {liveWorkers.map((w) => (
+          {liveWorkers.map((w, i) => (
             <PersonRow
               key={w.id}
+              index={i}
               name={w.name}
               sub={w.site}
               online={w.status === "on_site"}
@@ -81,7 +77,7 @@ export default function OwnerDashboard() {
         <div className="relative flex items-center justify-between w-full">
           <p className="display text-xl font-bold leading-snug max-w-xs">Cleaner Sites. Safer People. Better Work.</p>
           <div className="flex items-center gap-2.5">
-            <AnimatedLogo size={36} glow={false} />
+            <img src="/logo.png" alt="" width={36} height={36} className="rounded-xl" aria-hidden />
             <span className="display font-extrabold">Work<span className="text-brand-light">O</span>nSite</span>
           </div>
         </div>

@@ -4,7 +4,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { ListSkeleton } from "../../components/Loading";
+import { AnimatePresence } from "framer-motion";
+import { ModalBackdrop, StaggerItem, StaggerList } from "../../components/Motion";
 
 // Leaflet's default marker icons reference image files by relative path,
 // which breaks under Vite's bundling — point them at CDN-hosted assets instead.
@@ -73,12 +74,14 @@ export default function SitesPage() {
       </div>
 
       <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
-        {loading && <ListSkeleton />}
+        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && sites.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No sites yet — add your first one.</p>
         )}
+        <StaggerList>
         {sites.map((s) => (
-          <button key={s.id} onClick={() => setManageSite(s)} className="w-full list-row px-4 text-left">
+          <StaggerItem key={s.id}>
+          <button onClick={() => setManageSite(s)} className="w-full list-row px-4 text-left">
             <div>
               <p className="font-medium text-sm">{s.name}</p>
               <p className="text-xs text-ink-900/50">{s.address || "No address set"} · Geofence {s.geofence_radius_m}m</p>
@@ -88,9 +91,12 @@ export default function SitesPage() {
               <p className="text-xs text-brand">Manage ›</p>
             </div>
           </button>
+          </StaggerItem>
         ))}
+        </StaggerList>
       </div>
 
+      <AnimatePresence>
       {showAdd && (
         <AddSiteModal
           onClose={() => setShowAdd(false)}
@@ -104,6 +110,7 @@ export default function SitesPage() {
       {manageSite && (
         <ManageSiteModal site={manageSite} onClose={() => setManageSite(null)} onChanged={load} isOwner={profile?.role === "owner"} />
       )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -158,7 +165,7 @@ function AddSiteModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
+    <ModalBackdrop onClose={onClose}>
       <div className="bg-white rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
         <h2 className="font-display font-semibold mb-4">Add site</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -218,7 +225,7 @@ function AddSiteModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
           </div>
         </form>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 }
 
@@ -270,12 +277,12 @@ function ManageSiteModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
+    <ModalBackdrop onClose={onClose}>
       <div className="bg-white rounded-card p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto">
         <h2 className="font-display font-semibold mb-1">{site.name}</h2>
         <p className="text-xs text-ink-900/50 mb-4">Assign workers &amp; team leaders to this site</p>
 
-        {loading && <ListSkeleton rows={3} compact />}
+        {loading && <p className="text-sm text-ink-900/50">Loading…</p>}
         {!loading && members.length === 0 && <p className="text-sm text-ink-900/50">No team members yet.</p>}
 
         <div className="divide-y divide-black/5 mb-4 max-h-64 overflow-y-auto">
@@ -303,6 +310,6 @@ function ManageSiteModal({
           Done
         </button>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 }

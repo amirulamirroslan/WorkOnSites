@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
-import SuccessBadge from "../../components/SuccessBadge";
+import { motion } from "framer-motion";
+import { PopCheck, EASE } from "../../components/Motion";
 import { DarkScreen } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
@@ -44,14 +45,28 @@ export default function ClockInSuccess() {
   return (
     <DarkScreen className="px-5 pt-16 pb-8">
       <div className="card text-ink-900 px-6 pt-10 pb-7 text-center">
-        <SuccessBadge />
-        <h1 className="display text-xl font-bold mb-1 rise" style={{ animationDelay: "350ms" }}>Clocked In!</h1>
-        <p className="font-display text-3xl font-bold text-ink-900 mb-2 rise" style={{ animationDelay: "450ms" }}>{time}</p>
-        <p className="inline-flex items-center gap-1 text-brand text-sm font-semibold mb-6 rise" style={{ animationDelay: "550ms" }}>
+        <motion.div
+          initial={{ scale: 0.4, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 16 }}
+          className="w-24 h-24 rounded-full bg-success-500 mx-auto flex items-center justify-center shadow-[0_10px_30px_rgba(34,197,94,0.4)] mb-6"
+        >
+          <PopCheck size={48} strokeWidth={3.5} />
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3, ease: EASE }}
+          className="display text-xl font-bold mb-1"
+        >
+          Clocked In!
+        </motion.h1>
+        <p className="font-display text-3xl font-bold text-ink-900 mb-2">{time}</p>
+        <p className="inline-flex items-center gap-1 text-brand text-sm font-semibold mb-6">
           <MapPin size={14} /> {pendingClockIn?.site.name}
         </p>
 
-        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 space-y-3 text-sm text-left rise" style={{ animationDelay: "650ms" }}>
+        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 space-y-3 text-sm text-left">
           <div className="flex items-center justify-between">
             <span className="text-ink-900/70">Location verified</span>
             <span className="text-success-600 font-semibold">✓</span>
@@ -81,9 +96,9 @@ export default function ClockInSuccess() {
       </div>
 
       <div className="mt-auto pt-8">
-        <button className="action-band" onClick={() => navigate("/worker/tasks")}>
+        <motion.button whileTap={{ scale: 0.96 }} className="action-band" onClick={() => navigate("/worker/tasks")}>
           View Today's Tasks
-        </button>
+        </motion.button>
         <p className="text-white/60 text-xs text-center mt-4">You're all set. Have a great day!</p>
       </div>
     </DarkScreen>

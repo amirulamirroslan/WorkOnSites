@@ -1,17 +1,26 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { StaggerItem, StaggerList } from "../../components/Motion";
 import ProgressRing from "../../components/ProgressRing";
 import MobileScreen, { ScreenTitle, SitePill } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
+import { useAuth } from "../../context/AuthContext";
+import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 import { TaskStatusIcon, statusColor, statusLabel } from "./WorkerHome";
-import { TaskRowsSkeleton } from "../../components/Loading";
 
 type Filter = "all" | "completed" | "pending";
 
 export default function TaskList() {
-  const { site, tasks, tasksLoading } = useAppState();
+  const { tasks } = useAppState();
+  const { profile } = useAuth();
+  const [site, setSite] = useState<AssignedSite | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
+
+  useEffect(() => {
+    if (profile) getMyAssignedSite(profile.id).then(setSite);
+  }, [profile]);
 
   const completed = tasks.filter((t) => t.status === "completed");
   const pending = tasks.filter((t) => t.status !== "completed");
@@ -27,7 +36,6 @@ export default function TaskList() {
 
   return (
     <MobileScreen
-      wide
       header={
         <div>
           <ScreenTitle title="Checklist" />
@@ -53,40 +61,40 @@ export default function TaskList() {
           <button
             key={t.id}
             onClick={() => setFilter(t.id)}
-            className={`press text-xs font-semibold px-3.5 py-2 rounded-pill transition-colors ${
-              filter === t.id ? "bg-brand text-white shadow-glow" : "bg-white text-ink-900/60 border border-cloud-100"
+            className={`relative text-xs font-semibold px-3.5 py-2 rounded-pill transition-colors ${
+              filter === t.id ? "text-white" : "bg-white text-ink-900/60 border border-cloud-100"
             }`}
           >
+            {filter === t.id && (
+              <motion.span
+                layoutId="task-filter-pill"
+                className="absolute inset-0 bg-brand rounded-pill shadow-glow -z-10"
+                transition={{ type: "spring", stiffness: 460, damping: 32 }}
+              />
+            )}
             {t.label} ({t.count})
           </button>
         ))}
       </div>
 
-      {tasksLoading && tasks.length === 0 && (
-        <div className="card divide-y divide-cloud-100">
-          <TaskRowsSkeleton />
-        </div>
-      )}
-      {!tasksLoading && visible.length === 0 && (
-        <p className="text-ink-900/40 text-sm py-6 text-center">No tasks here.</p>
-      )}
+      {visible.length === 0 && <p className="text-ink-900/40 text-sm py-6 text-center">No tasks here.</p>}
       {visible.length > 0 && (
-        <div className="card divide-y divide-cloud-100">
-          {visible.map((task) => (
-            <Link
-              key={task.id}
-              to={task.checklist.length ? `/worker/tasks/${task.id}` : "#"}
-              className="press-row flex items-center gap-3 px-4 py-3.5"
-            >
-              <TaskStatusIcon status={task.status} />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">{task.title}</p>
-                <p className={`text-xs ${statusColor[task.status]}`}>{task.subtitle || statusLabel[task.status]}</p>
-              </div>
-              <ChevronRight size={16} className="text-ink-900/25 shrink-0" />
-            </Link>
-          ))}
-        </div>
+        <StaggerList className="card divide-y divide-cloud-100">
+          <AnimatePresence>
+            {visible.map((task) => (
+              <StaggerItem key={task.id}>
+                <Link to={task.checklist.length ? `/worker/tasks/${task.id}` : "#"} className="flex items-center gap-3 px-4 py-3.5">
+                  <TaskStatusIcon status={task.status} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate">{task.title}</p>
+                    <p className={`text-xs ${statusColor[task.status]}`}>{task.subtitle || statusLabel[task.status]}</p>
+                  </div>
+                  <ChevronRight size={16} className="text-ink-900/25 shrink-0" />
+                </Link>
+              </StaggerItem>
+            ))}
+          </AnimatePresence>
+        </StaggerList>
       )}
     </MobileScreen>
   );

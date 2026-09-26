@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { EASE } from "./Motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import AnimatedLogo from "./AnimatedLogo";
 
 // Shared shell for every worker screen.
 //
@@ -27,24 +28,25 @@ export default function MobileScreen({
   if (navSpace) {
     return (
       <div className="min-h-screen bg-navy-950 lg:bg-cloud-50">
-        <div className={`mobile-bg lg:bg-none text-white min-h-screen flex flex-col md:max-w-2xl md:mx-auto ${
-            wide ? "lg:max-w-6xl" : "lg:max-w-3xl"
-          } lg:min-h-0 lg:px-8 lg:pt-8 lg:pb-10`}>
-          <div className="px-5 pt-5 pb-7 lg:mobile-bg lg:rounded-2xl lg:px-8 lg:py-8 lg:shadow-soft">
-            {/* Phone only: the laptop layout already shows the logo in the sidebar. */}
-            <div className="lg:hidden flex items-center gap-2 mb-5">
-              <AnimatedLogo size={26} glow={false} />
-              <span className="display text-sm font-extrabold tracking-tight">
-                Work<span className="text-brand-light">O</span>nSite
-              </span>
-            </div>
+        <div className="mobile-bg lg:bg-none text-white min-h-screen flex flex-col md:max-w-2xl md:mx-auto lg:max-w-6xl lg:min-h-0 lg:px-8 lg:pt-8 lg:pb-10">
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="px-5 pt-10 pb-7 lg:mobile-bg lg:rounded-2xl lg:px-8 lg:py-8 lg:shadow-soft"
+          >
             {header}
-          </div>
-          <div
-            className={`flex-1 bg-cloud-50 text-ink-900 rounded-t-xl2 px-5 pt-6 pb-28 lg:flex-none lg:bg-transparent lg:rounded-none lg:px-0 lg:pt-6 lg:pb-0 ${sheetClassName}`}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.06, ease: EASE }}
+            className={`flex-1 bg-cloud-50 text-ink-900 rounded-t-xl2 px-5 pt-6 pb-28 lg:flex-none lg:bg-transparent lg:rounded-none lg:px-0 lg:pt-6 lg:pb-0 ${
+              wide ? "" : "lg:max-w-3xl"
+            } ${sheetClassName}`}
           >
             {children}
-          </div>
+          </motion.div>
         </div>
       </div>
     );
@@ -62,11 +64,14 @@ export default function MobileScreen({
 function StandaloneFrame({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div className="bg-navy-950 md:mobile-bg min-h-screen md:flex md:items-center md:justify-center md:py-8">
-      <div
-        className={`page-enter mobile-bg text-white min-h-screen flex flex-col w-full md:max-w-xl md:min-h-[640px] md:rounded-3xl md:overflow-hidden md:shadow-2xl md:border md:border-white/10 ${className}`}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.32, ease: EASE }}
+        className={`mobile-bg text-white min-h-screen flex flex-col w-full md:max-w-xl md:min-h-[640px] md:rounded-3xl md:overflow-hidden md:shadow-2xl md:border md:border-white/10 ${className}`}
       >
         {children}
-      </div>
+      </motion.div>
     </div>
   );
 }

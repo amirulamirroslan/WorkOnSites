@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 
@@ -9,7 +9,6 @@ type Profile = {
   organization_id: string;
   role: Role;
   full_name: string;
-  pdpa_accepted_at: string | null;
 };
 
 type AuthValue = {
@@ -52,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // profileLoading below — not the same as "still fetching."
     supabase
       .from("profiles")
-      .select("id, organization_id, role, full_name, pdpa_accepted_at")
+      .select("id, organization_id, role, full_name")
       .eq("id", session.user.id)
       .single()
       .then(({ data }) => {
@@ -61,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   }, [session]);
 
-  const signIn = useCallback(async (emailOrUsername: string, password: string) => {
+  async function signIn(emailOrUsername: string, password: string) {
     // Team leaders/workers created via the "Add team member" flow have no
     // real email — they sign in with just their username, which maps to a
     // synthetic "<username>@workonsite.internal" auth email under the hood.
@@ -70,18 +69,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       : `${emailOrUsername.trim().toLowerCase()}@workonsite.internal`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
-  }, []);
+  }
 
-  const signOut = useCallback(async () => {
+  async function signOut() {
     await supabase.auth.signOut();
-  }, []);
+  }
 
-  const value = useMemo(
-    () => ({ session, profile, loading, profileLoading, signIn, signOut }),
-    [session, profile, loading, profileLoading, signIn, signOut]
+  return (
+    <AuthContext.Provider value={{ session, profile, loading, profileLoading, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

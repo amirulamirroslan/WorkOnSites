@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import AuthShell, { Wordmark } from "../components/AuthShell";
-import AnimatedLogo from "../components/AnimatedLogo";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -34,7 +33,7 @@ export default function ForgotPassword() {
   return (
     <AuthShell skyline="none" panel>
       <div className="flex flex-col items-center text-center mt-6 mb-8">
-        <AnimatedLogo size={56} className="mb-3" />
+        <img src="/logo.png" alt="" width={56} height={56} className="rounded-2xl shadow-glow mb-3" aria-hidden />
         <Wordmark size="text-xl" />
         <p className="text-white/70 text-sm mt-2">Forgot your password?</p>
       </div>

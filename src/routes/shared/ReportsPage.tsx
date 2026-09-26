@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
-import { CardGridSkeleton } from "../../components/Loading";
 
 type Period = "daily" | "weekly" | "monthly";
 
@@ -117,7 +116,7 @@ export default function ReportsPage() {
       </div>
 
       {loading ? (
-        <CardGridSkeleton />
+        <p className="text-sm text-ink-900/50">Loading…</p>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 mb-8">

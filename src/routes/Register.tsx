@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import AuthShell from "../components/AuthShell";
-import AnimatedLogo from "../components/AnimatedLogo";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -79,7 +78,7 @@ export default function Register() {
   return (
     <AuthShell skyline="none" panel>
       <div className="flex flex-col items-center text-center mb-8">
-        <AnimatedLogo size={56} className="mb-3" />
+        <img src="/logo.png" alt="" width={56} height={56} className="rounded-2xl shadow-glow mb-3" aria-hidden />
         <h1 className="display text-xl font-semibold">Create your organization</h1>
         <p className="text-white/60 text-sm mt-1">Set up WorkOnSite for your team</p>
       </div>

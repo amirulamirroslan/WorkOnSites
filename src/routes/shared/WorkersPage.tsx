@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { KeyRound } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ModalBackdrop, StaggerItem, StaggerList } from "../../components/Motion";
 import { Avatar } from "../../components/MobileScreen";
-import { ListSkeleton } from "../../components/Loading";
 
 type Member = {
   id: string;
@@ -65,12 +66,14 @@ export default function WorkersPage() {
       </div>
 
       <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
-        {loading && <ListSkeleton />}
+        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && members.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No team members yet.</p>
         )}
+        <StaggerList>
         {members.map((m) => (
-          <div key={m.id} className="list-row px-4">
+          <StaggerItem key={m.id}>
+          <div className="list-row px-4">
             <div className="flex items-center gap-3 min-w-0">
               <Avatar name={m.full_name} size={36} />
               <div className="min-w-0">
@@ -90,9 +93,12 @@ export default function WorkersPage() {
               </button>
             )}
           </div>
+          </StaggerItem>
         ))}
+        </StaggerList>
       </div>
 
+      <AnimatePresence>
       {showAdd && (
         <AddMemberModal
           onClose={() => setShowAdd(false)}
@@ -103,7 +109,6 @@ export default function WorkersPage() {
           }}
         />
       )}
-
       {resetTarget && (
         <ResetPasswordModal
           member={resetTarget}
@@ -114,9 +119,8 @@ export default function WorkersPage() {
           }}
         />
       )}
-
       {createdCreds && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
+        <ModalBackdrop onClose={() => setCreatedCreds(null)}>
           <div className="bg-white rounded-card p-6 max-w-xs w-full">
             <h2 className="font-display font-semibold mb-2">{createdCreds.title}</h2>
             <p className="text-xs text-ink-900/60 mb-4">
@@ -135,8 +139,9 @@ export default function WorkersPage() {
               Done
             </button>
           </div>
-        </div>
+        </ModalBackdrop>
       )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -172,7 +177,7 @@ function AddMemberModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
+    <ModalBackdrop onClose={onClose}>
       <div className="bg-white rounded-card p-6 max-w-xs w-full">
         <h2 className="font-display font-semibold mb-4">Add team member</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -211,7 +216,7 @@ function AddMemberModal({
           </div>
         </form>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 }
 
@@ -242,7 +247,7 @@ function ResetPasswordModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-6 z-50">
+    <ModalBackdrop onClose={onClose}>
       <div className="bg-white rounded-card p-6 max-w-xs w-full">
         <h2 className="font-display font-semibold mb-2">Reset password?</h2>
         <p className="text-xs text-ink-900/60 mb-4">
@@ -259,6 +264,6 @@ function ResetPasswordModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalBackdrop>
   );
 }

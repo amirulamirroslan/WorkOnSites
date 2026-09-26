@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { ListSkeleton } from "../../components/Loading";
 
 type Template = { id: string; name: string; version: number };
 type TemplateItem = { id: string; label: string; sort_order: number; requires_photo: boolean; is_required: boolean };
@@ -40,7 +39,7 @@ export default function ChecklistsPage() {
       </div>
 
       <div className="bg-white rounded-card border border-cloud-100 shadow-soft">
-        {loading && <ListSkeleton />}
+        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
         {!loading && templates.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No templates yet.</p>}
         {templates.map((t) => (
           <div key={t.id} className="list-row px-4">
@@ -166,7 +165,7 @@ function EditTemplateModal({ template, onClose }: { template: Template; onClose:
       <div className="bg-white rounded-card p-6 max-w-sm w-full max-h-[85vh] overflow-y-auto">
         <h2 className="font-display font-semibold mb-4">{template.name}</h2>
 
-        {loading && <ListSkeleton rows={3} compact />}
+        {loading && <p className="text-sm text-ink-900/50">Loading…</p>}
         <div className="divide-y divide-black/5 mb-4">
           {items.map((item) => (
             <div key={item.id} className="flex items-center justify-between py-2 gap-2">

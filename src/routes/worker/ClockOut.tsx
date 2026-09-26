@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import SuccessBadge from "../../components/SuccessBadge";
+import { motion } from "framer-motion";
+import { PopCheck, EASE } from "../../components/Motion";
 import MobileScreen, { DarkScreen, ScreenTitle } from "../../components/MobileScreen";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
-import { recordAttendanceEvent } from "../../lib/attendance";
+import { getCurrentPosition, recordAttendanceEvent } from "../../lib/attendance";
 
 export function ClockOutConfirm() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export function ClockOutConfirm() {
         <div className="flex justify-between"><span className="text-ink-900/60">Clocked in</span><span className="font-semibold">{clockInTime ?? "—"}</span></div>
       </div>
 
-      <button className="action-band" onClick={() => navigate("/worker/clock-out/face")}>
+      <button className="action-band" onClick={() => navigate("/worker/clock-out/success")}>
         Clock Out
       </button>
     </MobileScreen>
@@ -33,29 +34,29 @@ export function ClockOutConfirm() {
 export function ClockOutSuccess() {
   const navigate = useNavigate();
   const { profile } = useAuth();
-  const { pendingClockIn, pendingClockOut, setClockStatus, clockInTime } = useAppState();
+  const { pendingClockIn, setClockStatus, clockInTime } = useAppState();
   const [status, setStatus] = useState<"saving" | "recorded" | "queued_offline" | "error">("saving");
   const [time] = useState(() => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
 
   useEffect(() => {
     async function run() {
       // Clock-out reuses the site captured at clock-in (same shift, same
-      // site); position and photo come from the clock-out face-capture step
-      // that just ran, so they're not re-fetched here.
-      if (!profile || !pendingClockIn || !pendingClockOut || pendingClockOut.latitude == null || pendingClockOut.longitude == null) {
+      // site) — only the position needs re-checking, since GPS can move.
+      if (!profile || !pendingClockIn) {
         setStatus("error");
         return;
       }
       try {
+        const pos = await getCurrentPosition();
         const result = await recordAttendanceEvent({
           organizationId: profile.organization_id,
           workerId: profile.id,
           site: pendingClockIn.site,
           eventType: "clock_out",
-          latitude: pendingClockOut.latitude,
-          longitude: pendingClockOut.longitude,
-          accuracy: pendingClockOut.accuracy,
-          photoBlob: pendingClockOut.photoBlob,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy ?? null,
+          photoBlob: null,
         });
         setStatus(result.status);
       } catch {
@@ -69,19 +70,24 @@ export function ClockOutSuccess() {
   return (
     <DarkScreen className="px-5 pt-16 pb-8">
       <div className="card text-ink-900 px-6 pt-10 pb-8 text-center">
-        <SuccessBadge />
-        <h1 className="display text-xl font-bold mb-1 rise" style={{ animationDelay: "350ms" }}>Clocked Out!</h1>
-        <p className="font-display text-3xl font-bold mb-2 rise" style={{ animationDelay: "450ms" }}>{time}</p>
-        <p className="text-ink-900/50 text-sm rise" style={{ animationDelay: "550ms" }}>Clocked in at {clockInTime ?? "—"}</p>
-
-        <div className="rounded-2xl bg-cloud-50 border border-cloud-100 p-4 mt-4 text-sm text-left rise" style={{ animationDelay: "600ms" }}>
-          <div className="flex items-center justify-between">
-            <span className="text-ink-900/70">Photo captured</span>
-            <span className={pendingClockOut?.photoBlob ? "text-success-600 font-semibold" : "text-ink-900/40"}>
-              {pendingClockOut?.photoBlob ? "✓" : "Skipped"}
-            </span>
-          </div>
-        </div>
+        <motion.div
+          initial={{ scale: 0.4, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 16 }}
+          className="w-24 h-24 rounded-full bg-success-500 mx-auto flex items-center justify-center shadow-[0_10px_30px_rgba(34,197,94,0.4)] mb-6"
+        >
+          <PopCheck size={48} strokeWidth={3.5} />
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3, ease: EASE }}
+          className="display text-xl font-bold mb-1"
+        >
+          Clocked Out!
+        </motion.h1>
+        <p className="font-display text-3xl font-bold mb-2">{time}</p>
+        <p className="text-ink-900/50 text-sm">Clocked in at {clockInTime ?? "—"}</p>
 
         {status === "queued_offline" && (
           <p className="text-warning-500 text-xs mt-4">

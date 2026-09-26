@@ -1,7 +1,6 @@
-import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { PageFade } from "../../components/Motion";
 import { Users, UserCheck, Clock, UserX } from "lucide-react";
-import { PageLoader } from "../../components/Loading";
 import NavRail from "../../components/NavRail";
 import { BarRow, DateChip, PersonRow, Panel, StatCard, greeting } from "../../components/DashboardBits";
 import { useAuth } from "../../context/AuthContext";
@@ -17,16 +16,13 @@ const navItems = [
 ];
 
 export function LeadLayout() {
-  const { pathname } = useLocation();
   return (
     <div className="surface-light lg:flex min-h-screen">
       <NavRail items={navItems} />
       <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
-        <div key={pathname} className="page-enter">
-          <Suspense fallback={<PageLoader />}>
-            <Outlet />
-          </Suspense>
-        </div>
+        <PageFade routeKey={useLocation().pathname}>
+          <Outlet />
+        </PageFade>
       </main>
     </div>
   );
@@ -50,24 +46,25 @@ export default function LeadOverview() {
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <StatCard label="Total Workers" value={String(liveWorkers.length)} Icon={Users} tone="brand" delay={0} />
-        <StatCard label="On Site" value={String(onSite)} Icon={UserCheck} tone="success" delay={70} />
-        <StatCard label="Late" value={String(late)} Icon={Clock} tone="warning" delay={140} />
-        <StatCard label="Absent" value={String(absent)} Icon={UserX} tone="danger" delay={210} />
+        <StatCard index={0} label="Total Workers" value={String(liveWorkers.length)} Icon={Users} tone="brand" />
+        <StatCard index={1} label="On Site" value={String(onSite)} Icon={UserCheck} tone="success" />
+        <StatCard index={2} label="Late" value={String(late)} Icon={Clock} tone="warning" />
+        <StatCard index={3} label="Absent" value={String(absent)} Icon={UserX} tone="danger" />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Panel title="Site Performance">
           <div className="space-y-4">
-            {sitePerformance.map((s, i) => (
-              <BarRow key={s.site} label={s.site} percent={s.percent} delay={300 + i * 90} />
+            {sitePerformance.map((s) => (
+              <BarRow key={s.site} label={s.site} percent={s.percent} />
             ))}
           </div>
         </Panel>
         <Panel title="Live Workers">
-          {liveWorkers.map((w) => (
+          {liveWorkers.map((w, i) => (
             <PersonRow
               key={w.id}
+              index={i}
               name={w.name}
               online={w.status === "on_site"}
               sub={`${w.site} ${w.clockedInAt ? `· ${w.clockedInAt}` : "· Not clocked in"}`}

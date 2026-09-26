@@ -69,6 +69,17 @@ to reflect where things stand now, so it doesn't just grow forever.
 - Splash/Login/Register/Forgot/Set password: full-width navy screen with the skyline spanning the bottom on laptops, form in a glass panel
 - Breakpoints: `md` = 768px (wider phone column, centred cards), `lg` = 1024px (sidebar layouts)
 
+## Micro-animation + visual refresh pass
+- Added `framer-motion`; shared primitives in `components/Motion.tsx`: `PageFade` (screen entrance), `StaggerList`/`StaggerItem` (row-by-row list reveal), `AnimatedBar` (bars fill in), `CountUp` (numbers count up), `PopCheck` (spring checkmark), `ModalBackdrop` (fade+scale modal), `Skeleton` (shimmer placeholder, not yet used anywhere — wire in wherever a real loading state is added)
+- Page transitions: every worker screen (via `MobileScreen`/`DarkScreen`) fades/rises in on mount; Owner/Team-Leader main content replays the fade on every route change (`PageFade` keyed by pathname in their layouts)
+- Nav: bottom tab bar has a sliding pill behind the active tab; desktop sidebar has a sliding active-item pill and the mobile drawer now springs open/closed instead of a linear CSS slide
+- Dashboards: stat cards pop in with a stagger, numbers count up, site-performance bars fill in from 0, worker/site/task list rows fade in one after another
+- Checklist: checkboxes pop with a spring check + draw-in tick; photo grid pops each new photo in
+- Success screens (Clocked In/Out): checkmark springs in, heading fades in after it
+- Modals (Add site, Manage site, Add team member, Reset password, credentials) fade+scale in/out via `ModalBackdrop`
+- Visual refresh: primary buttons (`.action-band`/`.action-light`) are now a gradient fill that shifts and lifts on hover (desktop) and settles on tap; cards get a subtle hover lift on desktop; added a `shimmer`/`floaty` keyframe pair and a `prefers-reduced-motion` global override that collapses all of this for anyone with that OS setting on
+- Not touched: Assignments/Tasks/Checklists/Attendance/Issues/Reports/Settings pages still use the plain list/card look — they inherit the page-fade and card hover-lift from the shared styles, but their rows aren't individually staggered yet
+
 ## Forgot / reset password
 - **Owners (real email):** `Forgot password?` on Login → `/forgot-password` sends a Supabase reset email → link opens `/reset-password` to set a new password. Needs the site URL + `https://<your-domain>/reset-password` in Supabase → Authentication → URL Configuration → Redirect URLs
 - **Team leaders / workers (username, no real email):** owner (any team leader/worker) or team leader (workers on their sites) taps **Reset password** on the Workers page → `reset-team-member-password` Edge Function generates a temp password shown once to hand over. The account is flagged `must_change_password`, so their next sign-in is forced through `/set-password`. New accounts from `create-team-member` get the same flag
@@ -112,25 +123,3 @@ verification, face capture, task list/checklist, clock-out, offline mode,
 issue reporting, team leader/owner dashboards, sites/profile/reports/settings
 screens) — ask if something doesn't match, since the mockups are the source
 of truth over anything written here.
-
-## UI motion & performance pass (current state)
-- **Motion** lives in one place: the "Motion" sections at the bottom of
-  `src/styles/index.css` (transform/opacity only, `prefers-reduced-motion`
-  respected). Pieces: `AnimatedLogo` (gloss sweep + beacon rings; also shown in the phone-only brand row at the top of every worker tab in `MobileScreen`), sliding
-  selected-item pill in `NavRail`/`BottomNav`, `Loading.tsx` (branded
-  `LoadingScreen`, `PageLoader`, `Spinner`, skeletons), `SuccessBadge`,
-  page-enter transition on every layout, `useAnimatedNumber` (count-ups on
-  stat cards / bars / progress ring), `.press` / `.press-row` tap feedback.
-- **Data loading**: tasks + assigned site are fetched in parallel using
-  `session.user.id` (profiles.id === auth.users.id) instead of waiting behind
-  the profile fetch, and cached in `AppState` (`site`) instead of re-fetched on
-  every tab visit. They refresh quietly when the app returns to the foreground
-  after 60s. Auth/AppState context values are memoised.
-- **Bundle**: owner/team-leader screens are lazy chunks (`App.tsx`); react and
-  supabase are split into long-lived vendor chunks (`vite.config.ts`) so app
-  updates re-download ~23 kB gz, not the whole bundle. Google Fonts are
-  runtime-cached for offline use.
-- **Assets/uploads**: the logo shown in the UI is `public/logo-256.png` (4.5 kB;
-  the old 213 kB `logo.png` was being downloaded for a 28–84 px image).
-  Checklist photos are downscaled to 1600 px JPEG before upload
-  (`src/lib/image.ts`) — raw camera photos are 3–8 MB.

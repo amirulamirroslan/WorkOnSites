@@ -1,6 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth, type Role } from "../context/AuthContext";
-import { LoadingScreen } from "../components/Loading";
 
 // Wraps a group of routes so they actually require being signed in (and,
 // optionally, a specific role) — without this, /worker, /lead, and /owner
@@ -10,7 +9,7 @@ import { LoadingScreen } from "../components/Loading";
 export default function RequireRole({ allow }: { allow?: Role[] }) {
   const { session, profile, loading } = useAuth();
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return null;
   if (!session) return <Navigate to="/splash" replace />;
   // Signed in with an admin-issued temporary password: must choose their own first.
   if (session.user.user_metadata?.must_change_password) return <Navigate to="/set-password" replace />;
