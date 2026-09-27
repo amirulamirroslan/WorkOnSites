@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StaggerItem, StaggerList } from "../../components/Motion";
 import ProgressRing from "../../components/ProgressRing";
 import MobileScreen, { ScreenTitle, SitePill } from "../../components/MobileScreen";
+import { EmptyTasksArt } from "../../components/Illustrations";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
@@ -77,7 +78,12 @@ export default function TaskList() {
         ))}
       </div>
 
-      {visible.length === 0 && <p className="text-ink-900/40 text-sm py-6 text-center">No tasks here.</p>}
+      {visible.length === 0 && (
+        <div className="flex flex-col items-center text-center py-8">
+          <EmptyTasksArt className="w-40 h-auto mb-2" />
+          <p className="text-ink-900/40 text-sm">No tasks here.</p>
+        </div>
+      )}
       {visible.length > 0 && (
         <StaggerList className="card divide-y divide-white/50">
           <AnimatePresence>

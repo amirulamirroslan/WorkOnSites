@@ -11,9 +11,10 @@
        panels alike pick up the same colour bleed. */
     background-color: #0a0618;
     background-image:
-      radial-gradient(45% 55% at 8% 8%, rgba(108, 92, 231, 0.55), transparent 60%),
-      radial-gradient(45% 55% at 95% 12%, rgba(34, 211, 238, 0.35), transparent 60%),
-      radial-gradient(60% 60% at 45% 100%, rgba(244, 114, 182, 0.28), transparent 65%);
+      radial-gradient(45% 55% at 8% 8%, rgba(108, 92, 231, 0.7), transparent 60%),
+      radial-gradient(45% 55% at 95% 12%, rgba(34, 211, 238, 0.45), transparent 60%),
+      radial-gradient(60% 60% at 45% 100%, rgba(244, 114, 182, 0.38), transparent 65%),
+      radial-gradient(50% 40% at 60% 80%, rgba(251, 191, 36, 0.22), transparent 65%);
     background-attachment: fixed;
     background-size: 200% 200%, 200% 200%, 200% 200%;
     animation: aurora 24s ease-in-out infinite;
@@ -44,10 +45,17 @@
     @apply text-ink-900;
     background-color: #f4f1ff;
     background-image:
-      radial-gradient(40% 50% at 0% 0%, rgba(108, 92, 231, 0.16), transparent 65%),
-      radial-gradient(35% 45% at 100% 0%, rgba(34, 211, 238, 0.14), transparent 65%),
-      radial-gradient(45% 50% at 50% 100%, rgba(244, 114, 182, 0.10), transparent 65%);
+      radial-gradient(45% 55% at 0% 0%, rgba(108, 92, 231, 0.26), transparent 65%),
+      radial-gradient(40% 50% at 100% 0%, rgba(34, 211, 238, 0.22), transparent 65%),
+      radial-gradient(50% 55% at 50% 100%, rgba(244, 114, 182, 0.18), transparent 65%),
+      radial-gradient(35% 40% at 80% 70%, rgba(251, 191, 36, 0.14), transparent 65%);
     background-attachment: fixed;
+  }
+
+  /* Colourful icon badge used for category buttons / list rows — replaces the
+     flat single-tone circle so screens read less like a plain admin panel. */
+  .icon-badge {
+    @apply w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 text-white shadow-soft;
   }
 
   /* Frosted light-glass card — the workhorse surface used almost everywhere

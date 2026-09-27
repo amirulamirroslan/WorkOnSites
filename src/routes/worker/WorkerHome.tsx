@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PopCheck, StaggerItem, StaggerList } from "../../components/Motion";
 import ProgressRing from "../../components/ProgressRing";
 import MobileScreen, { Avatar, SitePill } from "../../components/MobileScreen";
+import { BlobField, EmptyTasksArt, LocationPinArt } from "../../components/Illustrations";
 import { useAppState } from "../../context/AppState";
 import { useAuth } from "../../context/AuthContext";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
@@ -112,9 +113,11 @@ export default function WorkerHome() {
         whileTap={{ scale: 0.97 }}
         whileHover={{ y: -2 }}
         onClick={() => navigate(clockedIn ? "/worker/clock-out" : "/worker/clock-in/location")}
-        className="w-full text-left rounded-2xl bg-gradient-to-br from-brand-light via-brand to-brand-dark text-white p-5 shadow-glow flex items-center gap-4 -mt-1"
+        className="relative overflow-hidden w-full text-left rounded-2xl bg-gradient-to-br from-brand-light via-brand to-brand-dark text-white p-5 shadow-glow flex items-center gap-4 -mt-1"
       >
-        <div className="flex-1">
+        <BlobField />
+        <LocationPinArt className="absolute -right-3 -top-3 w-28 h-28 opacity-90" />
+        <div className="flex-1 relative">
           <p className="display text-xl font-semibold">{clockedIn ? "Clock Out" : "Clock In"}</p>
           <p className="text-white/80 text-sm mt-0.5">
             {clockedIn ? `Clocked in at ${clockInTime ?? "—"}` : "Tap to verify location & face"}
@@ -123,7 +126,7 @@ export default function WorkerHome() {
         <motion.span
           animate={{ x: [0, 3, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center"
+          className="relative w-11 h-11 rounded-full bg-white/20 flex items-center justify-center"
         >
           <ArrowUpRight size={22} />
         </motion.span>
@@ -152,7 +155,12 @@ export default function WorkerHome() {
           </button>
         </div>
         <StaggerList className="card divide-y divide-white/50">
-          {tasks.length === 0 && <p className="text-ink-900/40 text-sm px-4 py-4">No tasks assigned for today.</p>}
+          {tasks.length === 0 && (
+            <div className="flex flex-col items-center text-center px-4 py-6">
+              <EmptyTasksArt className="w-36 h-auto mb-2" />
+              <p className="text-ink-900/50 text-sm">No tasks assigned for today.</p>
+            </div>
+          )}
           {tasks.slice(0, 5).map((task) => (
             <StaggerItem key={task.id}>
               <motion.button

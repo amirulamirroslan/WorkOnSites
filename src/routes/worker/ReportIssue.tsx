@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { DoorClosed, Wrench, FlaskConical, ShieldAlert, MoreHorizontal, type LucideIcon } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import MobileScreen, { ScreenTitle } from "../../components/MobileScreen";
+import { ReportIssueArt } from "../../components/Illustrations";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 
-const categories = [
-  { id: "access_problem", label: "Access Problem" },
-  { id: "equipment_damage", label: "Equipment Damage" },
-  { id: "chemical_unavailable", label: "Chemical Unavailable" },
-  { id: "safety_issue", label: "Safety Issue" },
-  { id: "other", label: "Other" },
+const categories: { id: string; label: string; Icon: LucideIcon; tint: string }[] = [
+  { id: "access_problem", label: "Access Problem", Icon: DoorClosed, tint: "bg-brand" },
+  { id: "equipment_damage", label: "Equipment Damage", Icon: Wrench, tint: "bg-aurora-cyan" },
+  { id: "chemical_unavailable", label: "Chemical Unavailable", Icon: FlaskConical, tint: "bg-aurora-pink" },
+  { id: "safety_issue", label: "Safety Issue", Icon: ShieldAlert, tint: "bg-danger-500" },
+  { id: "other", label: "Other", Icon: MoreHorizontal, tint: "bg-aurora-amber" },
 ];
 
 export default function ReportIssue() {
@@ -54,19 +56,29 @@ export default function ReportIssue() {
   }
 
   return (
-    <MobileScreen header={<ScreenTitle title="Report Issue" />}>
+    <MobileScreen
+      header={
+        <div className="flex items-center justify-between">
+          <ScreenTitle title="Report Issue" />
+          <ReportIssueArt className="w-24 h-auto -mt-2 -mr-1 shrink-0" />
+        </div>
+      }
+    >
       <p className="font-display font-semibold mb-3">What's the problem?</p>
       <div className="grid grid-cols-2 gap-2.5 mb-6">
         {categories.map((c) => (
           <button
             key={c.id}
             onClick={() => setCategory(c.id)}
-            className={`rounded-2xl px-3 py-4 text-sm font-medium text-center border transition-colors ${
+            className={`flex items-center gap-2.5 rounded-2xl px-3 py-3.5 text-sm font-medium text-left border transition-colors ${
               category === c.id
                 ? "bg-brand text-white border-brand shadow-glow"
                 : "glass text-ink-900/70"
             }`}
           >
+            <span className={`icon-badge ${category === c.id ? "bg-white/20" : c.tint}`}>
+              <c.Icon size={18} strokeWidth={2.2} />
+            </span>
             {c.label}
           </button>
         ))}

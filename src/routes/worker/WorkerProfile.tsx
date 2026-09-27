@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronRight, LogOut } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import MobileScreen, { Avatar } from "../../components/MobileScreen";
+import { ProfileWaveArt } from "../../components/Illustrations";
 import { getMyAssignedSite, type AssignedSite } from "../../lib/attendance";
 
 export default function WorkerProfile() {
@@ -18,9 +19,10 @@ export default function WorkerProfile() {
   return (
     <MobileScreen
       header={
-        <div className="flex items-center gap-4">
+        <div className="relative flex items-center gap-4">
+          <ProfileWaveArt className="absolute -right-2 -top-6 w-28 h-28" />
           <Avatar name={name} size={60} />
-          <div className="min-w-0">
+          <div className="min-w-0 relative">
             <h1 className="display text-xl font-semibold truncate">{name || "Unknown"}</h1>
             <p className="text-white/70 text-sm">Worker{site ? ` · ${site.name}` : ""}</p>
           </div>
@@ -30,7 +32,7 @@ export default function WorkerProfile() {
       <div className="card divide-y divide-white/50 mb-6">
         <button onClick={() => navigate("/worker/report-issue")} className="w-full flex items-center justify-between px-4 py-4 text-left">
           <span className="flex items-center gap-3 text-sm font-medium">
-            <span className="w-8 h-8 rounded-full bg-brand-50 text-brand flex items-center justify-center">
+            <span className="icon-badge w-8 h-8 rounded-full bg-gradient-to-br from-aurora-amber to-aurora-pink">
               <AlertTriangle size={16} strokeWidth={2} />
             </span>
             Report an issue
