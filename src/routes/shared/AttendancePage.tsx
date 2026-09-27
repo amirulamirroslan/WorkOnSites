@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { StaggerItem, StaggerList } from "../../components/Motion";
+import { StaggerItem, StaggerList, SkeletonRows } from "../../components/Motion";
 
 type EventRow = {
   id: string;
@@ -106,7 +106,7 @@ export default function AttendancePage() {
     <div>
       <h1 className="font-display text-xl font-semibold mb-6">Attendance</h1>
       <div className="card">
-        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
+        {loading && <SkeletonRows trailing="text" />}
         {!loading && shifts.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No attendance recorded yet.</p>}
         {!loading && shifts.length > 0 && (
           <StaggerList>

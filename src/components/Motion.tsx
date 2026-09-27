@@ -115,6 +115,45 @@ export function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`skeleton-shimmer rounded-lg bg-cloud-100 ${className}`} />;
 }
 
+// A handful of shimmering placeholder rows shaped like the real list-row
+// content that's about to load in — used in place of a plain "Loading…"
+// line on Workers/Sites/Tasks/Attendance/Checklists. `variant="compact"`
+// drops the list-row's own padding for rows already inside a modal that
+// supplies its own spacing (e.g. the site-assignment / checklist-item lists).
+export function SkeletonRows({
+  count = 3,
+  avatar = false,
+  trailing = "text",
+  variant = "list",
+}: {
+  count?: number;
+  avatar?: boolean;
+  trailing?: "text" | "chip" | "none";
+  variant?: "list" | "compact";
+}) {
+  return (
+    <div>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className={variant === "list" ? "list-row px-4" : "flex items-center justify-between py-2 border-b border-black/5 last:border-0"}>
+          <div className="flex items-center gap-3 min-w-0">
+            {avatar && <Skeleton className="w-9 h-9 rounded-full shrink-0" />}
+            <div className="min-w-0 space-y-2 py-0.5">
+              <Skeleton className="h-3.5 w-32" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+          {trailing !== "none" &&
+            (trailing === "chip" ? (
+              <Skeleton className="h-7 w-24 rounded-lg shrink-0" />
+            ) : (
+              <Skeleton className="h-3 w-12 shrink-0" />
+            ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Backdrop + panel wrapper for modals — fades the scrim and pops/slides the
 // panel in. Always render this inside <AnimatePresence> at the call site so
 // it can animate back out when dismissed.

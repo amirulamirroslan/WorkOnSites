@@ -133,16 +133,24 @@ export default function CameraCapture({
           </p>
         )}
 
-        {(phase === "live" || phase === "preview") && (
-          <video
-            ref={videoRef}
-            className={`absolute inset-0 w-full h-full object-cover scale-x-[-1] ${
-              phase === "preview" ? "hidden" : ""
-            }`}
-            muted
-            playsInline
-          />
-        )}
+        {/* Always mounted, right from the first render — never gated behind
+            a phase check. getUserMedia resolves and sets srcObject on
+            videoRef.current *while phase is still "starting"*, so if this
+            element only rendered once phase flipped to "live" it would not
+            exist in the DOM yet at that moment (the classic ref-timing bug:
+            the stream gets silently dropped, the permission prompt succeeds,
+            but nothing ever shows). Visibility is toggled with CSS instead,
+            so the one element that receives the stream stays mounted
+            throughout — "starting"/"error" just hide it behind the text
+            above via opacity. */}
+        <video
+          ref={videoRef}
+          className={`absolute inset-0 w-full h-full object-cover scale-x-[-1] ${
+            phase === "live" ? "" : "opacity-0 pointer-events-none"
+          }`}
+          muted
+          playsInline
+        />
 
         {phase === "preview" && previewUrl && (
           <img src={previewUrl} alt="Captured photo" className="absolute inset-0 w-full h-full object-cover" />

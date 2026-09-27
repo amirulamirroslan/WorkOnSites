@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { StaggerItem, StaggerList } from "../../components/Motion";
+import { StaggerItem, StaggerList, SkeletonRows } from "../../components/Motion";
 
 type Task = {
   id: string;
@@ -54,7 +54,7 @@ export default function TasksPage() {
       </div>
 
       <div className="card">
-        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
+        {loading && <SkeletonRows trailing="chip" />}
         {!loading && tasks.length === 0 && <p className="text-sm text-ink-900/50 px-4 py-4">No tasks yet.</p>}
         {!loading && tasks.length > 0 && (
           <StaggerList>

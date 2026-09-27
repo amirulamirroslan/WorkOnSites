@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { AnimatePresence } from "framer-motion";
-import { ModalBackdrop, StaggerItem, StaggerList } from "../../components/Motion";
+import { ModalBackdrop, StaggerItem, StaggerList, SkeletonRows } from "../../components/Motion";
 
 // Leaflet's default marker icons reference image files by relative path,
 // which breaks under Vite's bundling — point them at CDN-hosted assets instead.
@@ -74,7 +74,7 @@ export default function SitesPage() {
       </div>
 
       <div className="glass rounded-card">
-        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
+        {loading && <SkeletonRows trailing="text" />}
         {!loading && sites.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No sites yet — add your first one.</p>
         )}
@@ -282,7 +282,7 @@ function ManageSiteModal({
         <h2 className="font-display font-semibold mb-1">{site.name}</h2>
         <p className="text-xs text-ink-900/50 mb-4">Assign workers &amp; team leaders to this site</p>
 
-        {loading && <p className="text-sm text-ink-900/50">Loading…</p>}
+        {loading && <SkeletonRows variant="compact" trailing="none" count={4} />}
         {!loading && members.length === 0 && <p className="text-sm text-ink-900/50">No team members yet.</p>}
 
         <div className="divide-y divide-black/5 mb-4 max-h-64 overflow-y-auto">

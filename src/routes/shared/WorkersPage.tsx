@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { KeyRound } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ModalBackdrop, StaggerItem, StaggerList } from "../../components/Motion";
+import { ModalBackdrop, StaggerItem, StaggerList, SkeletonRows } from "../../components/Motion";
 import { Avatar } from "../../components/MobileScreen";
 
 type Member = {
@@ -66,7 +66,7 @@ export default function WorkersPage() {
       </div>
 
       <div className="glass rounded-card">
-        {loading && <p className="text-sm text-ink-900/50 px-4 py-4">Loading…</p>}
+        {loading && <SkeletonRows avatar trailing="chip" />}
         {!loading && members.length === 0 && (
           <p className="text-sm text-ink-900/50 px-4 py-4">No team members yet.</p>
         )}
